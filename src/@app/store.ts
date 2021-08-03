@@ -3,6 +3,7 @@ import callReducer from '../features/call/callSlice';
 import clazzReducer from '../features/clazz/clazzSlice';
 import methodReducer from '../features/method/methodSlice';
 import namespaceReducer from '../features/namespace/namespaceSlice';
+import persistenceReducer from '../features/persistence/persistenceSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     clazz: clazzReducer,
     method: methodReducer,
     namespace: namespaceReducer,
+    persistence: persistenceReducer,
   },
 });
 

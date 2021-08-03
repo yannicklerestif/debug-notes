@@ -22,6 +22,10 @@ export const selectClazzes = (state: RootState) => {
   return state.clazz.byId;
 }
 
+export const selectClazzesForSaving = (state: RootState) => {
+  return state.clazz.byId;
+}
+
 export const selectClazzesForNamespace = (state: RootState) => {
   return Object.keys(state.clazz.byNamespace).map(clazzId => state.clazz.byId[clazzId]);
 }
@@ -29,8 +33,20 @@ export const selectClazzesForNamespace = (state: RootState) => {
 export const clazzSlice = createSlice({
   name: 'clazz',
   initialState,
-  // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    loadClazzes: (state, action: PayloadAction<any>) => {
+      const byId: Record<string, Clazz> = action.payload;
+      // TODO: some duplication here
+      const byNamespace: Record<string, Record<string, boolean>> = {};
+      for(let clazzId in byId) {
+        const namespaceName: string = byId[clazzId].namespace;
+        if (byNamespace[namespaceName] == null)
+          byNamespace[namespaceName] = {};
+        byNamespace[namespaceName][clazzId] = true;
+      }
+      state.byId = byId;
+      state.byNamespace = byNamespace;
+    },
     addClazz: (state, action: PayloadAction<Clazz>) => {
       const clazz = action.payload;
       const clazzId: string = uuidv4();
@@ -52,6 +68,6 @@ export const clazzSlice = createSlice({
   },
 });
 
-export const {addClazz, removeClazz} = clazzSlice.actions;
+export const {loadClazzes, addClazz, removeClazz} = clazzSlice.actions;
 
 export default clazzSlice.reducer;

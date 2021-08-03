@@ -26,11 +26,28 @@ export const selectMethods = (state: RootState) => {
   return state.method.byId;
 }
 
+export const selectMethodsForSaving = (state: RootState) => {
+  return state.method.byId;
+}
+
 export const methodSlice = createSlice({
   name: 'method',
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    loadMethods: (state, action: PayloadAction<any>) => {
+      const byId: Record<string, Method> = action.payload;
+      // TODO: some duplication here
+      const byClazzId: Record<string, Record<string, boolean>> = {};
+      for(let methodId in byId) {
+        const clazzId: string = byId[methodId].classId;
+        if (byClazzId[clazzId] == null)
+          byClazzId[clazzId] = {};
+        byClazzId[clazzId][methodId] = true;
+      }
+      state.byId = byId;
+      state.byClassId = byClazzId;
+    },
     addMethod: (state, action: PayloadAction<Method>) => {
       const method = action.payload;
       const methodId: string = uuidv4();
@@ -67,6 +84,6 @@ export const methodSlice = createSlice({
   },
 });
 
-export const {addMethod, moveMethods, removeMethod} = methodSlice.actions;
+export const {loadMethods, addMethod, moveMethods, removeMethod} = methodSlice.actions;
 
 export default methodSlice.reducer;

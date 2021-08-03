@@ -17,6 +17,10 @@ export const selectNamespacesMap = (state: RootState) => {
   return state.namespace.byName;
 }
 
+export const selectNamespacesForSaving = (state: RootState) => {
+  return state.namespace.byName;
+}
+
 export const selectNamespacesList = (state: RootState) => {
   return Object.keys(state.namespace.byName).sort((a, b) => a.localeCompare(b));
 }
@@ -26,6 +30,9 @@ export const namespaceSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    loadNamespaces: (state, action: PayloadAction<any>) => {
+      state.byName = action.payload;
+    },
     addNamespace: (state, action: PayloadAction<string>) => {
       const namespaceName = action.payload;
       state.byName[namespaceName] = true;
@@ -37,6 +44,6 @@ export const namespaceSlice = createSlice({
   },
 });
 
-export const {addNamespace, removeNamespace} = namespaceSlice.actions;
+export const {loadNamespaces, addNamespace, removeNamespace} = namespaceSlice.actions;
 
 export default namespaceSlice.reducer;

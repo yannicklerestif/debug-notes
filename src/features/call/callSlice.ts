@@ -18,11 +18,18 @@ export const selectCalls = (state: RootState) => {
   return state.call.byId;
 }
 
+export const selectCallsForSaving = (state: RootState) => {
+  return state.call.byId;
+}
+
 export const callSlice = createSlice({
   name: 'call',
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    loadCalls: (state, action: PayloadAction<any>) => {
+      state.byId = action.payload;
+    },
     addCall: (state, action: PayloadAction<Call>) => {
       const call = action.payload;
       const callId: string = uuidv4();
@@ -32,6 +39,6 @@ export const callSlice = createSlice({
   },
 });
 
-export const {addCall} = callSlice.actions;
+export const {loadCalls, addCall} = callSlice.actions;
 
 export default callSlice.reducer;
