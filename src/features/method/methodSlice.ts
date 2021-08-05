@@ -4,6 +4,7 @@ import {Method} from "./method";
 import {v4 as uuidv4} from 'uuid';
 
 import {MoveEvent} from '../diagram/moveEvent';
+import {Call} from "../call/call";
 
 export interface MethodState {
   byId: Record<string, Method>;
@@ -24,6 +25,15 @@ const initialState: MethodState = {
 
 export const selectMethods = (state: RootState) => {
   return state.method.byId;
+}
+
+export const selectMethodsByClazzesIds = (clazzesIds: string[]) => (state: RootState) => {
+  let result: string[] = [];
+  for (let clazzId of clazzesIds) {
+    const methodsIdsForClazzId: string[] = Object.keys(state.method.byClassId) || [];
+    result = [...result, ...methodsIdsForClazzId];
+  }
+  return result;
 }
 
 export const selectMethodsForSaving = (state: RootState) => {
@@ -75,15 +85,16 @@ export const methodSlice = createSlice({
         state.byId[moveEvent.id].y! += moveEvent.y! - moveEvent.oldY;
       }
     },
-    removeMethod: (state, action: PayloadAction<string>) => {
-      const methodId: string = action.payload;
-      const method = state.byId[methodId];
-      delete state.byId[methodId];
-      delete state.byClassId[method.classId][methodId];
+    removeMethods: (state, action: PayloadAction<string[]>) => {
+      for (let methodId of action.payload) {
+        const method = state.byId[methodId];
+        delete state.byId[methodId];
+        delete state.byClassId[method.classId][methodId];
+      }
     },
   },
 });
 
-export const {loadMethods, addMethod, moveMethods, removeMethod} = methodSlice.actions;
+export const {loadMethods, addMethod, moveMethods, removeMethods} = methodSlice.actions;
 
 export default methodSlice.reducer;

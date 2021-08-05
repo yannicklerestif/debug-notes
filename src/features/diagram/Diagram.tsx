@@ -1,16 +1,19 @@
 import {useAppSelector, useAppDispatch} from '../../@app/hooks';
 import React, {useEffect} from "react";
-import {Edge, Graph, Node} from '@antv/x6';
+import {Cell, Edge, Graph, Model, Node} from '@antv/x6';
 
 import {selectDiagramModel} from "./diagramModel";
 import {moveMethods} from '../method/methodSlice';
 import {addCall} from '../call/callSlice';
 import {MoveEvent} from "./moveEvent";
+import {deselectCell, selectCell} from '../selection/selectionSlice';
 
 let graph: Graph | null = null;
 
 const movingNodes: Record<string, MoveEvent> = {};
 let movedNodes: Record<string, MoveEvent> = {};
+
+let isRebuildingGraph: boolean = false;
 
 export function Diagram() {
   const diagramModel = useAppSelector(selectDiagramModel);
@@ -80,6 +83,22 @@ export function Diagram() {
     dispatch(addCall({ callId: undefined, inMethodId, outMethodId }));
   }
 
+  const handleCellSelected = (cell: Cell) => {
+    if (isRebuildingGraph)
+      return;
+    const { type, id } = parseTypeAndId(cell.id);
+    console.log(`selecting ${type}, ${id}`);
+    dispatch(selectCell({type, id}));
+  }
+
+  const handleCellUnselected = (cell: Cell) => {
+    if (isRebuildingGraph)
+      return;
+    const { type, id } = parseTypeAndId(cell.id);
+    console.log(`unselecting ${type}, ${id}`);
+    dispatch(deselectCell({type, id}));
+  }
+
   useEffect(() => {
     if (graph == null) {
       graph = new Graph({
@@ -92,14 +111,20 @@ export function Diagram() {
           movable: true,
           strict: true,
           rubberband: true,
-          // showNodeSelectionBox: true,
+          showNodeSelectionBox: false,
           multiple: true,
         },
       });
-      graph.on("node:selected", (e: any) => {
-      })
-      graph.on("node:unselected", (e: any) => {
-      })
+      graph.on('cell:selected', (args: {
+        cell: Cell
+      }) => {
+        handleCellSelected(args.cell);
+      });
+      graph.on('cell:unselected', (args: {
+        cell: Cell
+      }) => {
+        handleCellUnselected(args.cell);
+      });
       graph.on("node:move",
         ({x, y, node}) => {
           console.log('start moving', x, y, node.id);
@@ -115,9 +140,13 @@ export function Diagram() {
         handleEdgeConnected(edge);
       });
     }
+
+    isRebuildingGraph = true;
+
     graph.clearCells();
 
     for (let clazz of Object.values(diagramModel.diagramClazzes)) {
+      const isClazzSelected = !!diagramModel.selectedObjects.selectedClazzes[clazz.clazzId!];
       const node = graph.addNode(
         {
           id: 'clazz_' + clazz.clazzId,
@@ -131,6 +160,7 @@ export function Diagram() {
             rect: {
               fill: '#2ECC71',
               stroke: '#000',
+              'stroke-dasharray': isClazzSelected ? '5,5' : undefined,
             },
             text: {
               x: '5',
@@ -146,6 +176,7 @@ export function Diagram() {
     }
 
     for (let method of Object.values(diagramModel.diagramMethods)) {
+      const isMethodSelected = !!diagramModel.selectedObjects.selectedMethods[method.methodId!];
       const child = graph.addNode(
         {
           id: 'method_' + method.methodId,
@@ -163,22 +194,51 @@ export function Diagram() {
               {id: 'in1', group: 'in',},
               {id: 'out1', group: 'out',},
             ],
-          }
+          },
+          attrs: {
+            rect: {
+              'stroke-dasharray': isMethodSelected ? '5,5' : undefined,
+            },
+          },
         }
       );
       const parent = graph.getCellById('clazz_' + method.classId);
       parent.addChild(child);
+      if (isMethodSelected)
+        graph.select(child);
     }
 
     for (let call of Object.values(diagramModel.diagramCalls)) {
+      const isCallSelected = !!diagramModel.selectedObjects.selectedCalls[call.callId!];
       const sourceNode = graph.getCellById('method_' + call.outMethodId);
       const targetNode = graph.getCellById('method_' + call.inMethodId);
-      graph.addEdge(graph.addEdge({
+      const edge = graph.addEdge({
         id: 'call_' + call.callId,
         source: { cell: sourceNode, port: 'out1' },
         target: { cell: targetNode, port: 'in1' },
-      }))
+        // router: {
+        //   name: 'manhattan',
+        //   args: {
+        //     startDirections: ['right'],
+        //     endDirections: ['left'],
+        //   },
+        // },
+        connector: {
+          name: 'rounded',
+          args: {},
+        },
+        attrs: {
+          line: {
+            'stroke-dasharray': isCallSelected ? '5,5' : undefined,
+          },
+        },
+      });
+      if (isCallSelected) {
+        graph.select(edge);
+      }
     }
+
+    isRebuildingGraph = false;
   });
 
   return (

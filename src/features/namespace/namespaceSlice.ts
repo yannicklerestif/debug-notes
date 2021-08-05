@@ -37,13 +37,15 @@ export const namespaceSlice = createSlice({
       const namespaceName = action.payload;
       state.byName[namespaceName] = true;
     },
-    removeNamespace: (state, action: PayloadAction<string>) => {
-      const namespaceName = action.payload;
-      delete state.byName[namespaceName];
+    removeNamespaces: (state, action: PayloadAction<string[]>) => {
+
+      for (let namespaceName of action.payload) {
+        delete state.byName[namespaceName];
+      }
     },
   },
 });
 
-export const {loadNamespaces, addNamespace, removeNamespace} = namespaceSlice.actions;
+export const {loadNamespaces, addNamespace, removeNamespaces} = namespaceSlice.actions;
 
 export default namespaceSlice.reducer;

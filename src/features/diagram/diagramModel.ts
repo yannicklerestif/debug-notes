@@ -1,7 +1,7 @@
 import {RootState} from "../../@app/store";
 import {Method} from "../method/method";
 import {Clazz} from "../clazz/clazz";
-import {Call} from "../call/call";
+import {selectSelectedObjects} from "../selection/selectionSlice";
 
 export const selectDiagramModel = (state: RootState) => {
   const diagramMethods: Record<string, Method> = {};
@@ -35,5 +35,6 @@ export const selectDiagramModel = (state: RootState) => {
     diagramCalls: state.call.byId,
     diagramClazzes,
     diagramMethods,
+    selectedObjects: selectSelectedObjects(state),
   };
 }

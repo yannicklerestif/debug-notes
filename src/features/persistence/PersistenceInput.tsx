@@ -13,8 +13,6 @@ export function PersistenceInput(props: any) {
   }
 
   return (
-    <div>
       <Button variant="contained" className={styles.button} onClick={() => handleSave()}>Save</Button>
-    </div>
   );
 }

@@ -22,6 +22,18 @@ export const selectCallsForSaving = (state: RootState) => {
   return state.call.byId;
 }
 
+export const selectCallsByMethodsIds = (methodsIds: string[]) => (state: RootState) => {
+  const methodsIdsMap: Record<string, boolean> = {};
+  for (let methodsId of methodsIds) {
+    methodsIdsMap[methodsId] = true;
+  }
+  return Object.keys(state.call.byId)
+      .filter(callId => {
+        const call: Call = state.call.byId[callId];
+        return methodsIdsMap[call.inMethodId!] || methodsIdsMap[call.outMethodId];
+  })
+}
+
 export const callSlice = createSlice({
   name: 'call',
   initialState,
@@ -36,9 +48,14 @@ export const callSlice = createSlice({
       call.callId = callId;
       state.byId[callId] = call;
     },
+    deleteCalls: (state, action: PayloadAction<string[]>) => {
+      for (let callId of action.payload) {
+        delete state.byId[callId];
+      }
+    },
   },
 });
 
-export const {loadCalls, addCall} = callSlice.actions;
+export const {loadCalls, addCall, deleteCalls} = callSlice.actions;
 
 export default callSlice.reducer;

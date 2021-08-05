@@ -3,6 +3,7 @@ import {NamespaceInput} from "../namespace/NamespaceInput";
 import {ClazzInput} from "../clazz/ClazzInput";
 import {MethodInput} from "../method/MethodInput";
 import {PersistenceInput} from "../persistence/PersistenceInput";
+import {DeletionInput} from "../deletion/DeletionInput";
 
 export function MyForm() {
   return (
@@ -10,7 +11,7 @@ export function MyForm() {
       <NamespaceInput />
       <ClazzInput />
       <MethodInput />
-      <PersistenceInput />
+      <PersistenceInput />&nbsp;<DeletionInput />
     </div>
   );
 }
