@@ -30,7 +30,8 @@ export const selectMethods = (state: RootState) => {
 export const selectMethodsByClazzesIds = (clazzesIds: string[]) => (state: RootState) => {
   let result: string[] = [];
   for (let clazzId of clazzesIds) {
-    const methodsIdsForClazzId: string[] = Object.keys(state.method.byClassId) || [];
+    const methodsIdsForClazzIdMap = state.method.byClassId[clazzId];
+    const methodsIdsForClazzId: string[] = (methodsIdsForClazzIdMap && Object.keys(methodsIdsForClazzIdMap)) || [];
     result = [...result, ...methodsIdsForClazzId];
   }
   return result;
@@ -85,9 +86,11 @@ export const methodSlice = createSlice({
         state.byId[moveEvent.id].y! += moveEvent.y! - moveEvent.oldY;
       }
     },
-    removeMethods: (state, action: PayloadAction<string[]>) => {
+    deleteMethods: (state, action: PayloadAction<string[]>) => {
       for (let methodId of action.payload) {
         const method = state.byId[methodId];
+        if (method == null)
+          continue;
         delete state.byId[methodId];
         delete state.byClassId[method.classId][methodId];
       }
@@ -95,6 +98,6 @@ export const methodSlice = createSlice({
   },
 });
 
-export const {loadMethods, addMethod, moveMethods, removeMethods} = methodSlice.actions;
+export const {loadMethods, addMethod, moveMethods, deleteMethods} = methodSlice.actions;
 
 export default methodSlice.reducer;

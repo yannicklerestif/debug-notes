@@ -48,9 +48,9 @@ export const clazzSlice = createSlice({
       state.byNamespace = byNamespace;
     },
     addClazz: (state, action: PayloadAction<Clazz>) => {
-      const clazz = action.payload;
+      const clazz_ = action.payload;
       const clazzId: string = uuidv4();
-      clazz.clazzId = clazzId;
+      const clazz = { ...clazz_, clazzId };
       state.byId[clazzId] = clazz;
       let clazzIdsForNamespace = state.byNamespace[clazz.namespace];
       if (clazzIdsForNamespace == null) {
@@ -59,15 +59,18 @@ export const clazzSlice = createSlice({
       }
       clazzIdsForNamespace[clazzId] = true;
     },
-    removeClazz: (state, action: PayloadAction<string>) => {
-      const clazzId: string = action.payload;
-      const clazz = state.byId[clazzId];
-      delete state.byId[clazzId];
-      delete state.byNamespace[clazz.namespace][clazzId];
+    deleteClazzes: (state, action: PayloadAction<string[]>) => {
+      for (let clazzId of action.payload) {
+        const clazz = state.byId[clazzId];
+        if (clazz == null)
+          continue;
+        delete state.byId[clazzId];
+        delete state.byNamespace[clazz.namespace][clazzId];
+      }
     },
   },
 });
 
-export const {loadClazzes, addClazz, removeClazz} = clazzSlice.actions;
+export const {loadClazzes, addClazz, deleteClazzes} = clazzSlice.actions;
 
 export default clazzSlice.reducer;

@@ -172,6 +172,8 @@ export function Diagram() {
             },
           },
         });
+      if (isClazzSelected)
+        graph.select(node);
       node.on('node:batch:stop', (e: any, f: any) => console.log('node event', e, f));
     }
 
