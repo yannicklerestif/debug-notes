@@ -5,8 +5,6 @@ import styles from "./NamespaceInput.module.css";
 import {addNamespace} from './namespaceSlice';
 import {useAppDispatch} from '../../@app/hooks';
 import Button from "@material-ui/core/Button";
-import {Snackbar} from "@material-ui/core";
-import {Alert} from "@material-ui/lab";
 import {MySnackbar} from "../../@shared/snackbar/MySnackbar";
 
 export function NamespaceInput(props: any) {

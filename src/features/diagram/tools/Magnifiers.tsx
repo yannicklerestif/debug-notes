@@ -1,14 +1,10 @@
 import React from "react";
 
-import styles from "./Magnifiers.module.css";
-import {useAppDispatch} from "../../../@app/hooks";
 import {Button, IconButton} from "@material-ui/core";
 import { ZoomIn, ZoomOut } from "@material-ui/icons";
 import { graphContainer } from "../Diagram";
 
 export function Magnifiers(props: any) {
-  const dispatch = useAppDispatch();
-
   const handleZoomIn = () => {
     graphContainer.graph!.zoom(0.2);
   }

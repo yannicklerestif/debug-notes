@@ -4,7 +4,6 @@ import {Method} from "./method";
 import {v4 as uuidv4} from 'uuid';
 
 import {MoveEvent} from '../diagram/moveEvent';
-import {Call} from "../call/call";
 
 export interface MethodState {
   byId: Record<string, Method>;

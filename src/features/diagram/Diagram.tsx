@@ -1,6 +1,6 @@
 import {useAppSelector, useAppDispatch} from '../../@app/hooks';
 import React, {useEffect} from "react";
-import {Cell, Edge, Graph, Model, Node} from '@antv/x6';
+import {Cell, Edge, Graph, Node} from '@antv/x6';
 
 import {selectDiagramModel} from "./diagramModel";
 import {moveMethods} from '../method/methodSlice';
@@ -56,7 +56,7 @@ export function Diagram() {
     for (let diagramId in movedNodes) {
       const movedNodeEvent: MoveEvent = movedNodes[diagramId];
       // if it's a method, add it
-      if (movedNodeEvent.type == 'method') {
+      if (movedNodeEvent.type === 'method') {
         movedNodeEventsByMethodId[movedNodeEvent.id] = movedNodeEvent;
         continue;
       }
