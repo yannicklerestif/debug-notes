@@ -8,12 +8,20 @@ import {addCall} from '../call/callSlice';
 import {MoveEvent} from "./moveEvent";
 import {deselectCell, selectCell} from '../selection/selectionSlice';
 
+import styles from './Diagram.module.css';
+
 let graph: Graph | null = null;
 
 const movingNodes: Record<string, MoveEvent> = {};
 let movedNodes: Record<string, MoveEvent> = {};
 
 let isRebuildingGraph: boolean = false;
+
+export interface GraphContainer {
+  graph: Graph | null;
+}
+
+export const graphContainer: GraphContainer = { graph: null };
 
 export function Diagram() {
   const diagramModel = useAppSelector(selectDiagramModel);
@@ -104,8 +112,7 @@ export function Diagram() {
       graph = new Graph({
         container: document.getElementById('diagram-container')!,
         grid: {visible: true},
-        width: 800,
-        height: 600,
+        autoResize: true,
         selecting: {
           enabled: true,
           movable: true,
@@ -114,7 +121,12 @@ export function Diagram() {
           showNodeSelectionBox: false,
           multiple: true,
         },
+        scroller: {
+          enabled: true,
+          pageVisible: true,
+        },
       });
+      graphContainer.graph = graph;
       graph.on('cell:selected', (args: {
         cell: Cell
       }) => {
@@ -244,6 +256,6 @@ export function Diagram() {
   });
 
   return (
-    <div id="diagram-container"/>
+    <div id="diagram-container" className={styles.Diagram}/>
   );
 }

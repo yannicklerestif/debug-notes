@@ -1,6 +1,15 @@
+.MyForm {
+    flex-grow: 0;
+}
+
 .textbox {
     font-size: 12px;
     padding: 2px;
     width: 200px;
     margin-right: 4px;
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: row;
 }
