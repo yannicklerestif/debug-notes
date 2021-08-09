@@ -112,6 +112,7 @@ export function Diagram() {
       graph = new Graph({
         container: document.getElementById('diagram-container')!,
         grid: {visible: true},
+        // TODO: doesn't seem to work ATM
         autoResize: true,
         selecting: {
           enabled: true,
