@@ -7,6 +7,7 @@ import {DeletionInput} from "../deletion/DeletionInput";
 import styles from "./MyForm.module.css";
 import Tools from "../diagram/tools/Tools";
 import { Magnifiers } from "../diagram/tools/Magnifiers";
+import {ArgumentInput} from "../argument/ArgumentInput";
 
 export function MyForm() {
   return (
@@ -14,6 +15,7 @@ export function MyForm() {
       <NamespaceInput />
       <ClazzInput />
       <MethodInput />
+      <ArgumentInput />
       <div className={styles.toolbar}>
         <PersistenceInput />
         <DeletionInput />

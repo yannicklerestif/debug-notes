@@ -1,6 +1,8 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RootState} from '../../@app/store';
 import {OBJECTS_TYPES} from "../../@app/objects";
+import {Call} from "../call/call";
+import {Method} from "../method/method";
 
 export interface SelectionEvent {
   type: string,
@@ -18,6 +20,14 @@ const initialState: SelectionState = {
   selectedMethods: {},
   selectedClazzes: {},
 };
+
+export const selectSelectedCalls = (state: RootState): Call[] => {
+  return Object.keys(state.selection.selectedCalls).map(callId => state.call.byId[callId]);
+}
+
+export const selectSelectedCallsMethods = (state: RootState): [Method, Method][] => {
+  return selectSelectedCalls(state).map(call => [state.method.byId[call.sourceMethodId], state.method.byId[call.targetMethodId]]);
+}
 
 export const selectSelectedObjects = (state: RootState) => {
   return state.selection;

@@ -1,4 +1,5 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import argumentReducer from '../features/argument/argumentSlice';
 import callReducer from '../features/call/callSlice';
 import clazzReducer from '../features/clazz/clazzSlice';
 import deletionReducer from '../features/clazz/clazzSlice';
@@ -9,6 +10,7 @@ import selectionReducer from '../features/selection/selectionSlice';
 
 export const store = configureStore({
   reducer: {
+    argument: argumentReducer,
     call: callReducer,
     clazz: clazzReducer,
     deletion: deletionReducer,

@@ -26,6 +26,10 @@ export const selectMethods = (state: RootState) => {
   return state.method.byId;
 }
 
+export const selectMethodById = (methodId: string) => (state: RootState): Method => {
+  return state.method.byId[methodId];
+}
+
 export const selectMethodsByClazzesIds = (clazzesIds: string[]) => (state: RootState) => {
   let result: string[] = [];
   for (let clazzId of clazzesIds) {
