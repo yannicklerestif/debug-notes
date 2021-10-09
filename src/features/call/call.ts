@@ -1,5 +1,5 @@
 export interface Call {
   callId: string | undefined;
-  outMethodId: string;
-  inMethodId: string;
+  sourceMethodId: string;
+  targetMethodId: string;
 }

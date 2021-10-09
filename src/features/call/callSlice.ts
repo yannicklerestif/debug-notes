@@ -9,8 +9,8 @@ export interface CallState {
 
 const initialState: CallState = {
   byId: {
-    '1-1234': { callId: '1-1234', outMethodId: '1', inMethodId: '1234' },
-    '1-22': { callId: '1-22', outMethodId: '1', inMethodId: '22' },
+    '1-1234': { callId: '1-1234', sourceMethodId: '1', targetMethodId: '1234' },
+    '1-22': { callId: '1-22', sourceMethodId: '1', targetMethodId: '22' },
   },
 };
 
@@ -30,7 +30,7 @@ export const selectCallsByMethodsIds = (methodsIds: string[]) => (state: RootSta
   return Object.keys(state.call.byId)
       .filter(callId => {
         const call: Call = state.call.byId[callId];
-        return methodsIdsMap[call.inMethodId!] || methodsIdsMap[call.outMethodId];
+        return methodsIdsMap[call.targetMethodId!] || methodsIdsMap[call.sourceMethodId];
   })
 }
 

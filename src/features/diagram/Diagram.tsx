@@ -82,13 +82,13 @@ export function Diagram() {
   }
 
   const handleEdgeConnected = (edge: Edge) => {
-    const { type: outType, id: outMethodId } = parseTypeAndId(edge.getSourceCellId());
-    const { type: inType, id: inMethodId } = parseTypeAndId(edge.getTargetCellId());
+    const { type: outType, id: sourceMethodId } = parseTypeAndId(edge.getSourceCellId());
+    const { type: inType, id: targetMethodId } = parseTypeAndId(edge.getTargetCellId());
     if (inType !== 'method' || outType !== 'method') {
       console.error('Wrong source or destination type: ', edge.getSource(), edge.getTarget());
       return;
     }
-    dispatch(addCall({ callId: undefined, inMethodId, outMethodId }));
+    dispatch(addCall({ callId: undefined, targetMethodId, sourceMethodId }));
   }
 
   const handleCellSelected = (cell: Cell) => {
@@ -225,8 +225,8 @@ export function Diagram() {
 
     for (let call of Object.values(diagramModel.diagramCalls)) {
       const isCallSelected = !!diagramModel.selectedObjects.selectedCalls[call.callId!];
-      const sourceNode = graph.getCellById('method_' + call.outMethodId);
-      const targetNode = graph.getCellById('method_' + call.inMethodId);
+      const sourceNode = graph.getCellById('method_' + call.sourceMethodId);
+      const targetNode = graph.getCellById('method_' + call.targetMethodId);
       const edge = graph.addEdge({
         id: 'call_' + call.callId,
         source: { cell: sourceNode, port: 'out1' },
