@@ -13,6 +13,7 @@ import Button from "@material-ui/core/Button";
 import {Clazz} from "../clazz/clazz";
 import {Method} from "./method";
 import {MySnackbar} from "../../@shared/snackbar/MySnackbar";
+import {measureText} from "../diagram/text-measurer/TextMeasurer";
 
 export function MethodInput(props: any) {
   const dispatch = useAppDispatch();
@@ -46,15 +47,19 @@ export function MethodInput(props: any) {
   }
 
   const handleCreateMethod = () => {
+    let { width, height }: { width: number, height: number } = measureText(newMethod);
+    width += 20;
+    height += 20;
     const method: Method = {
-      height: undefined,
-      width: undefined,
+      height: height,
+      width: width,
       x: undefined,
       y: undefined,
       methodId: undefined,
       methodName: newMethod,
       classId: clazzId
     };
+    console.log(`measuring text size for ${newMethod}`, measureText(newMethod));
     dispatch(addMethod(method));
     setSnackbarMessage('Method ' + newMethod + ' successfully created');
     setNewMethod('');

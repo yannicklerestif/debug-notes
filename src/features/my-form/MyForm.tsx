@@ -7,6 +7,7 @@ import {DeletionInput} from "../deletion/DeletionInput";
 import styles from "./MyForm.module.css";
 import Tools from "../diagram/tools/Tools";
 import { Magnifiers } from "../diagram/tools/Magnifiers";
+import {TextMeasurer} from "../diagram/text-measurer/TextMeasurer";
 import {ArgumentInput} from "../argument/ArgumentInput";
 
 export function MyForm() {
@@ -22,6 +23,7 @@ export function MyForm() {
         <Tools />
         <Magnifiers />
       </div>
+      <TextMeasurer />
     </div>
   );
 }

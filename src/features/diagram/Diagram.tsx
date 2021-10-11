@@ -214,6 +214,11 @@ export function Diagram() {
             rect: {
               'stroke-dasharray': isMethodSelected ? '5,5' : undefined,
             },
+            text: {
+              // TODO: This must now be duplicated to TextMeasurer.module.css so that the text measuring method works.
+              'font-size': 14,
+              'font-family': 'Arial, helvetica, sans-serif',
+            }
           },
         }
       );
