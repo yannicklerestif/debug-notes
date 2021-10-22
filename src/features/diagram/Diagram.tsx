@@ -6,7 +6,7 @@ import {selectDiagramModel} from "./diagramModel";
 import {moveMethods} from '../method/methodSlice';
 import {addCall} from '../call/callSlice';
 import {MoveEvent} from "./moveEvent";
-import {deselectCell, selectCell} from '../selection/selectionSlice';
+import {selectDeselectCells, SelectionEvent} from '../selection/selectionSlice';
 
 import styles from './Diagram.module.css';
 
@@ -91,12 +91,34 @@ export function Diagram() {
     dispatch(addCall({ callId: undefined, targetMethodId, sourceMethodId }));
   }
 
+  let inProgressSelectDeselect: SelectionEvent[] = [];
+
+  // TODO: kind of a workaround, maybe wouldn't be needed if only the modified part of the diagram was updated
+  // The reason this method exists is because when multiple objects
+  // are moved together, we don't receive one global event but multiple
+  // individual events.
+  // Because each dispatched action makes us rebuild the whole graph,
+  // dispatching a lot of events takes a long time.
+  // This allows us to stack these events and then send a single action.
+  const dispatchLater = (selectionEvent: SelectionEvent) => {
+    inProgressSelectDeselect.push(selectionEvent);
+    if (inProgressSelectDeselect.length !== 1) {
+      // we are not the first, nothing more to do
+      return;
+    }
+    setTimeout(() => {
+      const toDispatch = inProgressSelectDeselect;
+      inProgressSelectDeselect = [];
+      dispatch(selectDeselectCells(toDispatch))
+    }, 100)
+  }
+
   const handleCellSelected = (cell: Cell) => {
     if (isRebuildingGraph)
       return;
     const { type, id } = parseTypeAndId(cell.id);
     console.log(`selecting ${type}, ${id}`);
-    dispatch(selectCell({type, id}));
+    dispatchLater({selectionEventType: 'select', type, id});
   }
 
   const handleCellUnselected = (cell: Cell) => {
@@ -104,7 +126,7 @@ export function Diagram() {
       return;
     const { type, id } = parseTypeAndId(cell.id);
     console.log(`unselecting ${type}, ${id}`);
-    dispatch(deselectCell({type, id}));
+    dispatchLater({selectionEventType: 'deselect', type, id});
   }
 
   useEffect(() => {

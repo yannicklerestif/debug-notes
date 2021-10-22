@@ -5,6 +5,7 @@ import {Call} from "../call/call";
 import {Method} from "../method/method";
 
 export interface SelectionEvent {
+  selectionEventType: 'select' | 'deselect',
   type: string,
   id: string,
 }
@@ -36,46 +37,33 @@ export const selectSelectedObjects = (state: RootState) => {
 export const selectionSlice = createSlice({
   name: 'selection',
   initialState,
-  // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    selectCell: (state, action: PayloadAction<SelectionEvent>) => {
-      switch (action.payload.type) {
-        case OBJECTS_TYPES.method:
-          state.selectedMethods[action.payload.id] = true;
-          // we don't want calls and clazzes selected when methods are selected,
-          // because x6 behaves weirdly when different types are moved together
-          state.selectedClazzes = {};
-          break;
-        case OBJECTS_TYPES.call:
-          state.selectedCalls[action.payload.id] = true;
-          break;
-        case OBJECTS_TYPES.clazz:
-          // refuse to select clazzes if there are already some methods (see above)
-          if (Object.keys(state.selectedMethods).length === 0)
-            state.selectedClazzes[action.payload.id] = true;
-          break;
+    selectDeselectCells: (state, action: PayloadAction<SelectionEvent[]>) => {
+      for (const selectionEvent of action.payload) {
+        let map: Record<string, boolean>;
+        switch (selectionEvent.type) {
+          case OBJECTS_TYPES.call:
+            map = state.selectedCalls;
+            break;
+          case OBJECTS_TYPES.method:
+            map = state.selectedMethods;
+            break;
+          case OBJECTS_TYPES.clazz:
+            map = state.selectedClazzes;
+            break;
+          default:
+            throw new Error('Unknown type: ' + selectionEvent.type);
+        }
+        if (selectionEvent.selectionEventType === 'select') {
+          map[selectionEvent.id] = true;
+        } else if (selectionEvent.selectionEventType === 'deselect') {
+          delete map[selectionEvent.id];
+        }
       }
-    },
-    deselectCell: (state, action: PayloadAction<SelectionEvent>) => {
-      let map: Record<string, boolean>;
-      switch (action.payload.type) {
-        case OBJECTS_TYPES.call:
-          map = state.selectedCalls;
-          break;
-        case OBJECTS_TYPES.method:
-          map = state.selectedMethods;
-          break;
-        case OBJECTS_TYPES.clazz:
-          map = state.selectedClazzes;
-          break;
-        default:
-          throw new Error('Unknown type: ' + action.payload.type);
-      }
-      delete map[action.payload.id];
-    },
+    }
   },
 });
 
-export const {selectCell, deselectCell} = selectionSlice.actions;
+export const {selectDeselectCells} = selectionSlice.actions;
 
 export default selectionSlice.reducer;
