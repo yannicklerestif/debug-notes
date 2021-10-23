@@ -134,14 +134,15 @@ export function Diagram() {
       graph = new Graph({
         container: document.getElementById('diagram-container')!,
         grid: {visible: true},
-        // TODO: doesn't seem to work ATM
         autoResize: true,
         selecting: {
           enabled: true,
           movable: true,
           strict: true,
           rubberband: true,
-          showNodeSelectionBox: false,
+          showNodeSelectionBox: true,
+          // doesn't look very nice ATM
+          showEdgeSelectionBox: false,
           multiple: true,
         },
         scroller: {
@@ -195,7 +196,9 @@ export function Diagram() {
             rect: {
               fill: '#2ECC71',
               stroke: '#000',
-              'stroke-dasharray': isClazzSelected ? '5,5' : undefined,
+              // use built-in selection box
+              // keeping it in case I change my mind
+              // 'stroke-dasharray': isClazzSelected ? '5,5' : undefined,
             },
             text: {
               x: '5',
@@ -234,7 +237,9 @@ export function Diagram() {
           },
           attrs: {
             rect: {
-              'stroke-dasharray': isMethodSelected ? '5,5' : undefined,
+              // use built-in selection box
+              // keeping it in case I change my mind
+              // 'stroke-dasharray': isMethodSelected ? '5,5' : undefined,
             },
             text: {
               // TODO: This must now be duplicated to TextMeasurer.module.css so that the text measuring method works.
@@ -271,6 +276,7 @@ export function Diagram() {
         },
         attrs: {
           line: {
+            'stroke': isCallSelected ? '#feb663' : '#000',
             'stroke-dasharray': isCallSelected ? '5,5' : undefined,
           },
         },
