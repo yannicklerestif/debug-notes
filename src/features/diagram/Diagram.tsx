@@ -1,4 +1,4 @@
-import {useAppSelector, useAppDispatch} from '../../@app/hooks';
+import {useAppDispatch, useAppSelector} from '../../@app/hooks';
 import React, {useEffect} from "react";
 import {Cell, Edge, Graph, Node} from '@antv/x6';
 
@@ -6,7 +6,7 @@ import {selectDiagramModel} from "./diagramModel";
 import {moveMethods} from '../method/methodSlice';
 import {addCall} from '../call/callSlice';
 import {MoveEvent} from "./moveEvent";
-import {selectDeselectCells, SelectionEvent} from '../selection/selectionSlice';
+import {selectDeselectCells, SelectionEvent, SelectionEventType} from '../selection/selectionSlice';
 
 import styles from './Diagram.module.css';
 
@@ -118,7 +118,7 @@ export function Diagram() {
       return;
     const { type, id } = parseTypeAndId(cell.id);
     console.log(`selecting ${type}, ${id}`);
-    dispatchLater({selectionEventType: 'select', type, id});
+    dispatchLater({selectionEventType: SelectionEventType.Select, type, id});
   }
 
   const handleCellUnselected = (cell: Cell) => {
@@ -126,7 +126,7 @@ export function Diagram() {
       return;
     const { type, id } = parseTypeAndId(cell.id);
     console.log(`unselecting ${type}, ${id}`);
-    dispatchLater({selectionEventType: 'deselect', type, id});
+    dispatchLater({selectionEventType: SelectionEventType.Deselect, type, id});
   }
 
   useEffect(() => {
@@ -141,7 +141,8 @@ export function Diagram() {
           strict: true,
           rubberband: true,
           showNodeSelectionBox: true,
-          // doesn't look very nice ATM
+          // disabled because it doesn't look very nice ATM
+          // (it's a box around bounds the edge)
           showEdgeSelectionBox: false,
           multiple: true,
         },
@@ -149,6 +150,10 @@ export function Diagram() {
           enabled: true,
           pageVisible: true,
         },
+        interacting: {
+          arrowheadMovable: true,
+          nodeMovable: true,
+        }
       });
       graphContainer.graph = graph;
       graph.on('cell:selected', (args: {

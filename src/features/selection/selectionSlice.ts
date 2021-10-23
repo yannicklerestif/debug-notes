@@ -4,8 +4,10 @@ import {OBJECTS_TYPES} from "../../@app/objects";
 import {Call} from "../call/call";
 import {Method} from "../method/method";
 
+export enum SelectionEventType { Select, Deselect}
+
 export interface SelectionEvent {
-  selectionEventType: 'select' | 'deselect',
+  selectionEventType: SelectionEventType,
   type: string,
   id: string,
 }
@@ -54,9 +56,9 @@ export const selectionSlice = createSlice({
           default:
             throw new Error('Unknown type: ' + selectionEvent.type);
         }
-        if (selectionEvent.selectionEventType === 'select') {
+        if (selectionEvent.selectionEventType === SelectionEventType.Select) {
           map[selectionEvent.id] = true;
-        } else if (selectionEvent.selectionEventType === 'deselect') {
+        } else if (selectionEvent.selectionEventType === SelectionEventType.Deselect) {
           delete map[selectionEvent.id];
         }
       }
