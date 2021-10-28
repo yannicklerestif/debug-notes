@@ -47,7 +47,7 @@ export function MethodInput(props: any) {
   }
 
   const handleCreateMethod = () => {
-    let { width, height }: { width: number, height: number } = measureText(newMethod);
+    let { width, height }: { width: number, height: number } = measureText(newMethod, ['text-measurer-method']);
     width += 20;
     height += 20;
     const method: Method = {
@@ -59,7 +59,7 @@ export function MethodInput(props: any) {
       methodName: newMethod,
       classId: clazzId
     };
-    console.log(`measuring text size for ${newMethod}`, measureText(newMethod));
+    console.log(`measuring text size for ${newMethod}`, measureText(newMethod, ['text-measurer-method']));
     dispatch(addMethod(method));
     setSnackbarMessage('Method ' + newMethod + ' successfully created');
     setNewMethod('');
