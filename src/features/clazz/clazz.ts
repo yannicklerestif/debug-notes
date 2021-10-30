@@ -4,6 +4,8 @@ export interface Clazz {
   namespace: string;
   x: number | undefined;
   y: number | undefined;
+  textWidth: number;
+  textHeight: number;
   width: number | undefined;
   height: number | undefined;
 }

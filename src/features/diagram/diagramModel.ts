@@ -28,7 +28,13 @@ export const selectDiagramModel = (state: RootState) => {
       // empty class, discarding
       continue;
     }
-    const diagramClazz = { ...clazz, x: minX - 10, y: minY - 40, width: maxX - minX + 20, height: maxY - minY + 50 };
+    const diagramClazz: Clazz = {
+      ...clazz,
+      x: minX - 10,
+      y: minY - clazz.textHeight,
+      width: Math.max(clazz.textWidth, maxX - minX + 20),
+      height: maxY - minY + clazz.textHeight + 10
+    };
     diagramClazzes[clazzId] = diagramClazz;
   }
   return {

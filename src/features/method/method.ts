@@ -4,6 +4,6 @@ export interface Method {
   classId: string;
   x: number | undefined;
   y: number | undefined;
-  width: number | undefined;
-  height: number | undefined;
+  width: number;
+  height: number;
 }

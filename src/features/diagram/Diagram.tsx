@@ -188,31 +188,35 @@ export function Diagram() {
 
     for (let clazz of Object.values(diagramModel.diagramClazzes)) {
       const isClazzSelected = !!diagramModel.selectedObjects.selectedClazzes[clazz.clazzId!];
+      console.log('clazz', clazz);
       const node = graph.addNode(
         {
+          shape: 'html',
           id: 'clazz_' + clazz.clazzId,
           x: clazz.x,
           y: clazz.y,
-          width: clazz.width,
-          height: clazz.height,
+          width: clazz.textWidth,
+          height: clazz.textHeight,
           zIndex: 1,
-          label: clazz.clazzName + '\n' + clazz.namespace,
-          attrs: {
-            rect: {
-              fill: '#2ECC71',
-              stroke: '#000',
-              // use built-in selection box
-              // keeping it in case I change my mind
-              // 'stroke-dasharray': isClazzSelected ? '5,5' : undefined,
-            },
-            text: {
-              x: '5',
-              y: '5',
-              refX: '0',
-              refY: '0',
-              textAnchor: 'left',
-              textVerticalAnchor: 'top'
-            },
+          html: () => {
+            const background = document.createElement('div')
+            background.style.width = `${clazz.width}px`;
+            background.style.height = `${clazz.height}px`;
+            background.style.border = '2px solid #000';
+            background.style.background = '#2ECC71';
+            background.style['pointerEvents'] = 'none';
+            const text = document.createElement('span')
+            text.innerText = clazz.clazzName + '\n' + clazz.namespace;
+            text.setAttribute('class', 'clazz-text')
+            text.style.position = 'absolute';
+            text.style.textAlign = 'left';
+            text.style.left = '0';
+            text.style.top = '0';
+            text.style.padding = '10px';
+            text.style.width = `${clazz.textWidth - 20}px`;
+            text.style.height = `${clazz.textHeight - 20}px`;
+            background.appendChild(text)
+            return background;
           },
         });
       if (isClazzSelected)
