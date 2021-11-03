@@ -168,13 +168,15 @@ export function Diagram() {
       });
       graph.on("node:move",
         ({x, y, node}) => {
-          console.log('start moving', x, y, node.id);
-          startMoving(x, y, node);
+        const position = node.getPosition();
+        console.log('start moving', x, y, node.id, position);
+          startMoving(position.x, position.y, node);
         });
       graph.on('node:moved',
         ({x, y, node}) => {
-          console.log('end moving  ', x, y, node.id);
-          endMoving(x, y, node);
+          const position = node.getPosition();
+          console.log('end moving  ', x, y, node.id, position);
+          endMoving(position.x, position.y, node);
         });
       graph.on('edge:connected', ({ edge }) => {
         console.log(edge);
