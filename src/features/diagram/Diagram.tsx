@@ -129,6 +129,12 @@ export function Diagram() {
     dispatchLater({selectionEventType: SelectionEventType.Deselect, type, id});
   }
 
+  const handleWindowResize = (graph: Graph) => {
+    const width = document.getElementById('diagram-outer-container')!.clientWidth;
+    const height = document.getElementById('diagram-outer-container')!.clientHeight;
+    graph!.resize(width, height);
+  }
+
   useEffect(() => {
     if (graph == null) {
       graph = new Graph({
@@ -148,7 +154,7 @@ export function Diagram() {
         },
         scroller: {
           enabled: true,
-          pageVisible: true,
+          autoResize: true,
         },
         interacting: {
           arrowheadMovable: true,
@@ -182,6 +188,9 @@ export function Diagram() {
         console.log(edge);
         handleEdgeConnected(edge);
       });
+      // workaround to resize the scrolling area when the window is resized.
+      // see https://github.com/antvis/X6/discussions/1913
+      window.addEventListener('resize', () => handleWindowResize(graph!));
     }
 
     isRebuildingGraph = true;
@@ -301,6 +310,8 @@ export function Diagram() {
   });
 
   return (
-    <div id="diagram-container" className={styles.Diagram}/>
+      <div id="diagram-outer-container" className={styles.DiagramOuterContainer}>
+        <div id="diagram-container" className={styles.Diagram}/>
+      </div>
   );
 }

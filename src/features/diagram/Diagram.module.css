@@ -7,5 +7,12 @@
 }
 
 .Diagram {
-    flex-grow: 1;
+    flex: 1;
+}
+
+.DiagramOuterContainer {
+    flex: 1;
+    min-height: 0px;
+    display: flex;
+    flex-direction: column;
 }
