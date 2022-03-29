@@ -108,7 +108,9 @@ intellij {
     type = 'RD'
     version = "${ProductVersion}"
     downloadSources = false
-    instrumentCode = false
+    // TODO YR: necessary for forms.
+    // we can probably get rid of it if we stop using them.
+    instrumentCode = true
     // TODO: add plugins
     // plugins = ["uml", "com.jetbrains.ChooseRuntime:1.0.9"]
 }
