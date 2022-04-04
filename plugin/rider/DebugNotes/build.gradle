@@ -37,6 +37,7 @@ sourceSets {
 }
 
 compileKotlin {
+    dependsOn tasks['rdgen']
     kotlinOptions { jvmTarget = "11" }
 }
 
@@ -65,6 +66,7 @@ task setBuildTool {
 }
 
 task compileDotNet {
+    dependsOn tasks['rdgen']
     dependsOn setBuildTool
     doLast {
         def arguments = setBuildTool.args.clone()

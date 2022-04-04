@@ -1,6 +1,8 @@
 # Build artifacts
 [Bb]in/
 [Oo]bj/
+**/[Bb]in/
+**/[Oo]bj/
 build
 output
 .gradle
@@ -20,3 +22,6 @@ output
 .vs
 _ReSharper*
 _dotTrace*
+
+# Generated files
+**/*.Generated.*
