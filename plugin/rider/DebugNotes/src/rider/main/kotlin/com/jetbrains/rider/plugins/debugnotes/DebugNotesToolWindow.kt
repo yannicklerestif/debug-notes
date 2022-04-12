@@ -61,9 +61,9 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             browser.component
         }
 
-        model.myStructure.advise(projectComponentLifetime) {
+        model.methodStructure.advise(projectComponentLifetime) {
             logger.warn(it.toString())
-            sendJavascriptToBrowser()
+            sendJavascriptToBrowser(it.namespace, it.className, it.methodName)
         }
 
     }

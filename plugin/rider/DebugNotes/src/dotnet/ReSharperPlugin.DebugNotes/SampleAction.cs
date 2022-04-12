@@ -29,11 +29,13 @@ namespace ReSharperPlugin.DebugNotes
         public void Execute(IDataContext context, DelegateExecute nextExecute)
         {
             IDeclaredElement declaredElement = context.GetData(PsiDataConstants.DECLARED_ELEMENTS)?.AsArray()[0];
+            MethodStructure methodStructure = null;
             if (declaredElement is IMethod declaredMethod)
             {
                 string methodName = declaredMethod.ShortName;
                 string className = declaredMethod.ContainingType.ShortName;
                 string namespaceName = declaredMethod.ContainingType.GetContainingNamespace().ShortName;
+                methodStructure = new MethodStructure(namespaceName, className, methodName);
             }
             var data = declaredElement?.ToString();
             var value = data.Split(':');
@@ -43,7 +45,10 @@ namespace ReSharperPlugin.DebugNotes
             var solution = context.GetComponent<ISolution>();
             var debugModelHost = solution.GetComponent<DebugNotesModelHost>();
 
-            debugModelHost.SendMyStructure(new MyStructure(type, name));
+            if (methodStructure != null)
+            {
+                debugModelHost.SendMethodStructure(methodStructure);
+            }
             MessageBox.ShowInfo(!string.IsNullOrEmpty(data) ? data : "Nothing to show");
         }
     }

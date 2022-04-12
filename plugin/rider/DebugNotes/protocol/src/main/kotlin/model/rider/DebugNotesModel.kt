@@ -14,9 +14,10 @@ object DebugNotesModel : Ext(SolutionModel.Solution) {
 //        +"SecondValue"
 //    }
 
-    val MyStructure = structdef {
-        field("type", string)
-        field("name", string)
+    val MethodStructure = structdef {
+        field("namespace", string)
+        field("className", string)
+        field("methodName", string)
 //        field("projectFile", string)
 //        field("target", string)
     }
@@ -31,6 +32,6 @@ object DebugNotesModel : Ext(SolutionModel.Solution) {
 //
 //        map("data", string, string)
 
-        signal("myStructure", MyStructure)
+        signal("methodStructure", MethodStructure)
     }
 }

@@ -22,9 +22,9 @@ namespace ReSharperPlugin.DebugNotes.Rider.Model
             }
         }
 
-        public void SendMyStructure(MyStructure structure)
+        public void SendMethodStructure(MethodStructure structure)
         {
-            model.MyStructure.Fire(structure);
+            model.MethodStructure.Fire(structure);
         }
     }
 }
