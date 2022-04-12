@@ -27,15 +27,19 @@ export function LazilyAddInput(props: any) {
       width: namespaceWidth,
       height: namespaceHeight
     }: { width: number, height: number } = measureText(lazyMethod_.namespace, ['clazz-text']);
-    const textWidth = Math.max(clazzNameWidth, namespaceWidth) + 20;
-    const textHeight = clazzNameHeight + namespaceHeight + 20;
-    const lazyMethod: LazyMethod = { ...lazyMethod_, width, height };
+    const clazzTextWidth = Math.max(clazzNameWidth, namespaceWidth) + 20;
+    const clazzTextHeight = clazzNameHeight + namespaceHeight + 20;
+    const lazyMethod: LazyMethod = { ...lazyMethod_, width, height, clazzTextWidth, clazzTextHeight };
     dispatch(lazilyAddMethodThunk(lazyMethod));
   }
 
   (window! as any).lazilyAddMethod = handleLazilyAddMethod;
 
   return (
-      <Button variant="contained" className={styles.button} onClick={() => handleLazilyAddMethod({namespace: '', clazzName: 'YannicksBeautifulClassName', methodName: 'method22'})}>Lazily Add</Button>
+      <Button variant="contained" className={styles.button} onClick={() => handleLazilyAddMethod({
+        namespace: 'SomeNewNamespace',
+        clazzName: 'SomeNewClass',
+        methodName: 'SomeNewMethodInTheNewClass'
+      })}>Lazily Add</Button>
   );
 }

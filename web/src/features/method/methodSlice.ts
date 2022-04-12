@@ -64,6 +64,10 @@ export const methodSlice = createSlice({
     },
     addMethod: (state, action: PayloadAction<Method>) => {
       const method = action.payload;
+      // don't do anything if there is already a method with the same name and class
+      if (Object.values(state.byId).some((method_) => method.methodName === method_.methodName && method.classId === method_.classId)) {
+        return;
+      }
       const methodId: string = uuidv4();
       method.methodId = methodId;
       method.x = 20;

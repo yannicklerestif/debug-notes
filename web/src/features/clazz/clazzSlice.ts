@@ -49,7 +49,7 @@ export const clazzSlice = createSlice({
     },
     addClazz: (state, action: PayloadAction<Clazz>) => {
       const clazz_ = action.payload;
-      // don't do anything if the class already exists
+      // don't do anything if there is already a class with the same name and namespace
       if (Object.values(state.byId).some((clazz) => clazz.clazzName === clazz_.clazzName && clazz.namespace === clazz_.namespace)) {
         return;
       }
