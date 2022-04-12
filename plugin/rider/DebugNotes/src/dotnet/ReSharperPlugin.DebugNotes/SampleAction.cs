@@ -1,7 +1,12 @@
+using System;
+using System.Collections.Generic;
 using JetBrains.Application.DataContext;
 using JetBrains.Application.UI.Actions;
 using JetBrains.Application.UI.ActionsRevised.Menu;
 using JetBrains.Application.UI.ActionSystem.ActionsRevised.Menu;
+using JetBrains.ReSharper.Feature.Services.ContextActions;
+using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.Util;
 
@@ -22,7 +27,8 @@ namespace ReSharperPlugin.DebugNotes
 
         public void Execute(IDataContext context, DelegateExecute nextExecute)
         {
-            MessageBox.ShowInfo("Info!");
+            var data = context.GetData(PsiDataConstants.DECLARED_ELEMENTS)?.AsArray()[0].ToString();
+            MessageBox.ShowInfo(!string.IsNullOrEmpty(data) ? data : "Nothing to show");
         }
     }
 }
