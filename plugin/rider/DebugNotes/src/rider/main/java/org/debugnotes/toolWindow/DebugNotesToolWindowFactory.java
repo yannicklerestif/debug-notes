@@ -6,6 +6,7 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
+import com.jetbrains.rider.plugins.debugnotes.DebugNotesToolWindow;
 
 public class DebugNotesToolWindowFactory implements ToolWindowFactory {
 

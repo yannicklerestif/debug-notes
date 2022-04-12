@@ -31,7 +31,7 @@
   </actions>
   <project-components>
     <component>
-      <implementation-class>com.jetbrains.rider.plugins.debugnotes.DebugNotesComponent</implementation-class>
+      <implementation-class>com.jetbrains.rider.plugins.debugnotes.DebugNotesToolWindow</implementation-class>
     </component>
   </project-components>
 
