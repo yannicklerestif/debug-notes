@@ -5,8 +5,7 @@ using JetBrains.Application.UI.Actions;
 using JetBrains.Application.UI.ActionsRevised.Menu;
 using JetBrains.Application.UI.ActionSystem.ActionsRevised.Menu;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.ContextActions;
-using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.Util;
@@ -29,7 +28,14 @@ namespace ReSharperPlugin.DebugNotes
 
         public void Execute(IDataContext context, DelegateExecute nextExecute)
         {
-            var data = context.GetData(PsiDataConstants.DECLARED_ELEMENTS)?.AsArray()[0].ToString();
+            IDeclaredElement declaredElement = context.GetData(PsiDataConstants.DECLARED_ELEMENTS)?.AsArray()[0];
+            if (declaredElement is IMethod declaredMethod)
+            {
+                string methodName = declaredMethod.ShortName;
+                string className = declaredMethod.ContainingType.ShortName;
+                string namespaceName = declaredMethod.ContainingType.GetContainingNamespace().ShortName;
+            }
+            var data = declaredElement?.ToString();
             var value = data.Split(':');
             var type = value[0];
             var name = value[1];
