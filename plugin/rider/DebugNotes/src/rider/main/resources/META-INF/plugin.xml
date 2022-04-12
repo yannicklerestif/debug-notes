@@ -21,8 +21,12 @@
   </extensions>
 
   <actions>
-    <action id="SampleAction" class="com.jetbrains.rider.plugins.debugnotes.SampleAction"
-            text="Do Something" description="Do Something Description">
+    <action id="SampleAction"
+            class="com.jetbrains.rider.plugins.debugnotes.SampleAction"
+            text="Do Something"
+            description="Do Something Description">
+      <override-text place="MainMenu" text="Do Something"/>
+      <add-to-group group-id="EditorPopupMenu" anchor="first"/>
     </action>
   </actions>
 
