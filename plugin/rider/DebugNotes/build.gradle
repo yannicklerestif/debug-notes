@@ -127,6 +127,7 @@ runIde {
 
     // gradle-intellij-plugin will download the default version of the JBR for the snapshot. Update if required
     // jbrVersion = "jbr_jcef-11_0_6b765.40" // https://confluence.jetbrains.com/display/JBR/Release+notes
+    jbrVersion = "jbr_jcef-11_0_14_1b2043.25" // https://confluence.jetbrains.com/display/JBR/Release+notes
 }
 
 rdgen {
