@@ -14,7 +14,7 @@ using ReSharperPlugin.DebugNotes.Rider.Model;
 
 namespace ReSharperPlugin.DebugNotes
 {
-    [Action("SampleAction", "Do Something")]
+    [Action("SampleAction", "DebugNotes")]
     public class SampleAction : IActionWithExecuteRequirement, IExecutableAction
     {
         public IActionRequirement GetRequirement(IDataContext dataContext)

@@ -22,9 +22,9 @@
 
   <actions>
     <action id="SampleAction"
-            class="com.jetbrains.rider.plugins.sampleplugin.SampleAction"
-            text="Do Something"
-            description="Do Something Description">
+            class="com.jetbrains.rider.plugins.debugnotes.SampleAction"
+            text="DebugNotes"
+            description="DebugNotes Description">
       <override-text place="MainMenu" text="Do Something"/>
       <add-to-group group-id="EditorPopupMenu" anchor="first"/>
     </action>
