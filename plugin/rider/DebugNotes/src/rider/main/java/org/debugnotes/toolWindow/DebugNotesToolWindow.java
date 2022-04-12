@@ -14,7 +14,7 @@ public class DebugNotesToolWindow {
 
     public DebugNotesToolWindow(@NotNull Project project) {
         JBCefBrowser browser = new JBCefBrowser();
-        browser.loadURL("https://yannicklerestif.com/debug-notes");
+        browser.loadURL("http://localhost:3000");
         Disposer.register(project, browser);
         content = browser.getComponent();
     }
