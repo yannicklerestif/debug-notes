@@ -9,25 +9,27 @@ import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
 @Suppress("unused")
 object DebugNotesModel : Ext(SolutionModel.Solution) {
 
-    val MyEnum = enum {
-        +"FirstValue"
-        +"SecondValue"
-    }
+//    val MyEnum = enum {
+//        +"FirstValue"
+//        +"SecondValue"
+//    }
 
     val MyStructure = structdef {
-        field("projectFile", string)
-        field("target", string)
+        field("type", string)
+        field("name", string)
+//        field("projectFile", string)
+//        field("target", string)
     }
 
     init {
         setting(CSharp50Generator.Namespace, "ReSharperPlugin.DebugNotes.Rider.Model")
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.debugnotes.model")
 
-        property("myString", string)
-        property("myBool", bool)
-        property("myEnum", MyEnum.nullable)
-
-        map("data", string, string)
+//        property("myString", string)
+//        property("myBool", bool)
+//        property("myEnum", MyEnum.nullable)
+//
+//        map("data", string, string)
 
         signal("myStructure", MyStructure)
     }

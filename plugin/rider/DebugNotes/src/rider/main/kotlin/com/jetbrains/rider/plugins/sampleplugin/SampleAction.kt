@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.debugnotes
+package com.jetbrains.rider.plugins.sampleplugin
 
 import com.jetbrains.rider.actions.base.RiderAnAction
 

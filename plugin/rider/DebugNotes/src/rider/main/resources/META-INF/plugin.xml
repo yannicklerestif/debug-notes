@@ -22,12 +22,17 @@
 
   <actions>
     <action id="SampleAction"
-            class="com.jetbrains.rider.plugins.debugnotes.SampleAction"
+            class="com.jetbrains.rider.plugins.sampleplugin.SampleAction"
             text="Do Something"
             description="Do Something Description">
       <override-text place="MainMenu" text="Do Something"/>
       <add-to-group group-id="EditorPopupMenu" anchor="first"/>
     </action>
   </actions>
+  <project-components>
+    <component>
+      <implementation-class>com.jetbrains.rider.plugins.debugnotes.DebugNotesComponent</implementation-class>
+    </component>
+  </project-components>
 
 </idea-plugin>
