@@ -26,7 +26,7 @@ public class DebugNotesToolWindow {
 
     public DebugNotesToolWindow(@NotNull Project project) {
         // I use it to have a button to trigger stuff manually
-        boolean debugMode = false;
+        boolean debugMode = true;
         JPanel container = null;
         PluginManager.getLogger().warn("Starting tool window");
         if (debugMode) {

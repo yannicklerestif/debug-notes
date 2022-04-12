@@ -49,6 +49,10 @@ export const clazzSlice = createSlice({
     },
     addClazz: (state, action: PayloadAction<Clazz>) => {
       const clazz_ = action.payload;
+      // don't do anything if the class already exists
+      if (Object.values(state.byId).some((clazz) => clazz.clazzName === clazz_.clazzName && clazz.namespace === clazz_.namespace)) {
+        return;
+      }
       const clazzId: string = uuidv4();
       const clazz = { ...clazz_, clazzId };
       state.byId[clazzId] = clazz;

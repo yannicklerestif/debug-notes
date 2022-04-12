@@ -9,6 +9,7 @@ import Tools from "../diagram/tools/Tools";
 import { Magnifiers } from "../diagram/tools/Magnifiers";
 import {TextMeasurer} from "../diagram/text-measurer/TextMeasurer";
 import {ArgumentInput} from "../argument/ArgumentInput";
+import {LazilyAddInput} from "../lazilyAdd/LazilyAddInput";
 
 export function MyForm() {
   return (
@@ -22,6 +23,7 @@ export function MyForm() {
         <DeletionInput />
         <Tools />
         <Magnifiers />
+        <LazilyAddInput />
       </div>
       <TextMeasurer />
     </div>
