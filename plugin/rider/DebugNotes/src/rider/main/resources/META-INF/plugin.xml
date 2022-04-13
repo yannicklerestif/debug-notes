@@ -22,7 +22,7 @@
 
   <actions>
     <action id="SampleAction"
-            class="com.jetbrains.rider.plugins.debugnotes.SampleAction"
+            class="com.jetbrains.rider.plugins.sampleplugin.SampleAction"
             text="DebugNotes"
             description="DebugNotes Description">
       <override-text place="MainMenu" text="Do Something"/>
