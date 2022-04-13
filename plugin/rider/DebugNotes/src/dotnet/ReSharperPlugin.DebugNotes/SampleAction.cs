@@ -60,3 +60,4 @@ namespace ReSharperPlugin.DebugNotes
             new MethodStructure(method.ContainingType.GetContainingNamespace().QualifiedName, method.ContainingType.ShortName, method.ShortName);
     }
 }
+
