@@ -4,9 +4,12 @@ import com.intellij.ide.plugins.PluginManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.jcef.JBCefBrowser
+import com.intellij.ui.jcef.JBCefBrowserBase
+import com.intellij.ui.jcef.JBCefJSQuery
 import com.jetbrains.rd.platform.util.getComponent
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rider.debugnotes.model.Call
+import com.jetbrains.rider.debugnotes.model.ClassStructure
 import com.jetbrains.rider.debugnotes.model.MethodStructure
 import com.jetbrains.rider.debugnotes.model.debugNotesModel
 import com.jetbrains.rider.projectView.solution
@@ -19,6 +22,7 @@ import javax.swing.JPanel
 class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponent(project) {
     val content: JComponent
     private val browser: JBCefBrowser
+    private val query: JBCefJSQuery
 
     companion object {
         @Suppress("unused")
@@ -57,6 +61,17 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
         )
     }
 
+    private fun clickClass() {
+        browser.cefBrowser.executeJavaScript(
+            """
+                window.JavaPanelBridge = {
+                    clickClass : function(class) {
+                        ${query.inject("class")}
+                    }
+                };
+            """.trimIndent(), "", 0);
+    }
+
     private val logger = PluginManager.getLogger()
 
     init {
@@ -83,6 +98,13 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
         } else {
             browser.component
         }
+        query = JBCefJSQuery.create(browser as JBCefBrowserBase)
+        query.addHandler {
+            val (namespace, className) = it.split(":")
+            model.navigateClass.fire(ClassStructure(namespace, className))
+            null
+        }
+        clickClass()
 
         model.method.advise(projectComponentLifetime) {
             logger.warn(it.toString())
