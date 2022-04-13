@@ -15,6 +15,11 @@ object DebugNotesModel : Ext(SolutionModel.Solution) {
         field("methodName", string)
     }
 
+    val ClassStructure = structdef {
+        field("namespace", string)
+        field("className", string)
+    }
+
     val Call = structdef {
         field("method", MethodStructure)
         field("parent", MethodStructure)
@@ -26,5 +31,7 @@ object DebugNotesModel : Ext(SolutionModel.Solution) {
 
         signal("call", Call)
         signal("method", MethodStructure)
+        signal("navigateMethod", MethodStructure)
+        signal("navigateClass", ClassStructure)
     }
 }
