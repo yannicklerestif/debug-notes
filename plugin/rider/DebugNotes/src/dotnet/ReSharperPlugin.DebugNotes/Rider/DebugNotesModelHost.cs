@@ -1,30 +1,21 @@
-using System;
-using System.Linq;
-using JetBrains.Application.Threading.Tasks;
-using JetBrains.Lifetimes;
-using JetBrains.Platform.MsBuildTask.Utils;
+using JetBrains.RdBackend.Common.Features;
 using JetBrains.ProjectModel;
-using JetBrains.Rider.Model;
 
 namespace ReSharperPlugin.DebugNotes.Rider.Model
 {
     [SolutionComponent]
     public class DebugNotesModelHost
     {
-        private readonly DebugNotesModel model;
-        public DebugNotesModelHost(SolutionModel solutionModel)
+        private readonly DebugNotesModel _model;
+        public DebugNotesModelHost(ISolution solution)
         {
-            // TODO upgrade to 2022.1, use TryGetSolution or GetProtocolSolution
-            var rdSolution = solutionModel.Solutions.First().Value;
-            if (rdSolution != null)
-            {
-                model = rdSolution.GetDebugNotesModel();
-            }
+            var rdSolution = solution.GetProtocolSolution();
+            _model = rdSolution.GetDebugNotesModel();
         }
 
         public void SendMethodStructure(MethodStructure structure)
         {
-            model.MethodStructure.Fire(structure);
+            _model.MethodStructure.Fire(structure);
         }
     }
 }
