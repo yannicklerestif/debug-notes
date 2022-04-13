@@ -13,9 +13,14 @@ namespace ReSharperPlugin.DebugNotes.Rider.Model
             _model = rdSolution.GetDebugNotesModel();
         }
 
-        public void SendMethodStructure(MethodStructure structure)
+        public void SendCall(MethodStructure method, MethodStructure parent)
         {
-            _model.MethodStructure.Fire(structure);
+            _model.Call.Fire(new Call(method, parent));
+        }
+
+        public void SendMethod(MethodStructure method)
+        {
+            _model.Method.Fire(method);
         }
     }
 }

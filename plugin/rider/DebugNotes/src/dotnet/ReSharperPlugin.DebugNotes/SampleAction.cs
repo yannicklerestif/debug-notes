@@ -4,8 +4,11 @@ using JetBrains.Application.UI.ActionsRevised.Menu;
 using JetBrains.Application.UI.ActionSystem.ActionsRevised.Menu;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Files;
+using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using ReSharperPlugin.DebugNotes.Rider.Model;
 
@@ -26,28 +29,34 @@ namespace ReSharperPlugin.DebugNotes
 
         public void Execute(IDataContext context, DelegateExecute nextExecute)
         {
-            IDeclaredElement declaredElement = context.GetData(PsiDataConstants.DECLARED_ELEMENTS)?.AsArray()[0];
-            MethodStructure methodStructure = null;
+            IDeclaredElement declaredElement = context.GetData(PsiDataConstants.DECLARED_ELEMENT);
+            ITreeNode referenceElement = context.GetData(PsiDataConstants.REFERENCE)?.GetTreeNode();
+            MethodStructure method = null;
+            MethodStructure parent = null;
             if (declaredElement is IMethod declaredMethod)
             {
-                string methodName = declaredMethod.ShortName;
-                string className = declaredMethod.ContainingType.ShortName;
-                string namespaceName = declaredMethod.ContainingType.GetContainingNamespace().ShortName;
-                methodStructure = new MethodStructure(namespaceName, className, methodName);
+                method = ConvertMethodToStructure(declaredMethod);
+
+                var parentMethod = referenceElement?.GetContainingNode<IMethodDeclaration>()?.DeclaredElement;
+                if (parentMethod != null)
+                {
+                    parent = ConvertMethodToStructure(parentMethod);
+                }
             }
-            var data = declaredElement?.ToString();
-            var value = data.Split(':');
-            var type = value[0];
-            var name = value[1];
 
             var solution = context.GetComponent<ISolution>();
             var debugModelHost = solution.GetComponent<DebugNotesModelHost>();
 
-            if (methodStructure != null)
+            if (method != null && parent != null)
             {
-                debugModelHost.SendMethodStructure(methodStructure);
+                debugModelHost.SendCall(method, parent);
+            } else if (method != null)
+            {
+                debugModelHost.SendMethod(method);
             }
-            MessageBox.ShowInfo(!string.IsNullOrEmpty(data) ? data : "Nothing to show");
         }
+
+        private MethodStructure ConvertMethodToStructure(IMethod method) =>
+            new MethodStructure(method.ContainingType.GetContainingNamespace().QualifiedName, method.ContainingType.ShortName, method.ShortName);
     }
 }

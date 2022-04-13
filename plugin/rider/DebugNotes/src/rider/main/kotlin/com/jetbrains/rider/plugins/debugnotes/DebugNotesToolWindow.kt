@@ -6,6 +6,8 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.jcef.JBCefBrowser
 import com.jetbrains.rd.platform.util.getComponent
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
+import com.jetbrains.rider.debugnotes.model.Call
+import com.jetbrains.rider.debugnotes.model.MethodStructure
 import com.jetbrains.rider.debugnotes.model.debugNotesModel
 import com.jetbrains.rider.projectView.solution
 import java.awt.Dimension
@@ -25,12 +27,33 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
 
     private val model = project.solution.debugNotesModel
 
-    private fun sendJavascriptToBrowser(namespace: String = "someNamespace", className: String = "someClazzName", method: String = "someMethodName") {
+    private fun lazilyAddMethod(method: MethodStructure) {
         browser.cefBrowser.executeJavaScript(
-            "window.lazilyAddMethod({"
-                    + "namespace:'$namespace',"
-                    + "clazzName: '$className',"
-                    + "methodName: '$method'});", "", 0
+            """
+                window.lazilyAddMethod({
+                    namespace: '${method.namespace}',
+                    clazzName: '${method.className}',
+                    methodName: '${method.methodName}'
+                });
+            """.trimIndent(), "", 0
+        )
+    }
+
+    private fun lazilyAddCall(call: Call) {
+        browser.cefBrowser.executeJavaScript(
+            """
+                window.lazilyAddCall({
+                    sourceMethod: {
+                      namespace: '${call.parent.namespace}',
+                      clazzName: '${call.parent.className}',
+                      methodName: '${call.parent.methodName}'
+                    }, targetMethod: {
+                      namespace: '${call.method.namespace}',
+                      clazzName: '${call.method.className}',
+                      methodName: '${call.method.methodName}'
+                    }
+                  });
+            """.trimIndent(), "", 0
         )
     }
 
@@ -46,7 +69,7 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             val button = JButton("TEST")
             button.addActionListener {
                 logger.warn("Hello, World!")
-                sendJavascriptToBrowser()
+                lazilyAddMethod(MethodStructure("Some.Namespace", "SomeClass", "SomeMethodName"))
             }
             button.preferredSize = Dimension(100, 100)
             container.add(button)
@@ -61,9 +84,14 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             browser.component
         }
 
-        model.methodStructure.advise(projectComponentLifetime) {
+        model.method.advise(projectComponentLifetime) {
             logger.warn(it.toString())
-            sendJavascriptToBrowser(it.namespace, it.className, it.methodName)
+            lazilyAddMethod(it)
+        }
+
+        model.call.advise(projectComponentLifetime) {
+            logger.warn(it.toString())
+            lazilyAddCall(it)
         }
 
     }
