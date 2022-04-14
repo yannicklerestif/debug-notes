@@ -199,6 +199,13 @@ export function Diagram() {
 
     for (let clazz of Object.values(diagramModel.diagramClazzes)) {
       const isClazzSelected = !!diagramModel.selectedObjects.selectedClazzes[clazz.clazzId!];
+
+      // @ts-ignore
+      if(isClazzSelected && window.JavaPanelBridge !== undefined) {
+          // @ts-ignore
+          window.JavaPanelBridge.clickClass(`${clazz.namespace}:${clazz.clazzName}`);
+      }
+
       console.log('clazz', clazz);
       const node = graph.addNode(
         {
