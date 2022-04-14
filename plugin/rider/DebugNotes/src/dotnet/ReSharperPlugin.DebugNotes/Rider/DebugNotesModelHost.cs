@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Resources.Shell;
 
 
 namespace ReSharperPlugin.DebugNotes.Rider.Model
@@ -45,7 +46,10 @@ namespace ReSharperPlugin.DebugNotes.Rider.Model
             var classDeclaration = declaredElement.GetDeclarations().First() as IClassLikeDeclaration;
             var methodDeclaration = classDeclaration.MethodDeclarations.First(m => m.NameIdentifier.Name == method.MethodName);
 
-            classDeclaration.GetSourceFile().Navigate(methodDeclaration.GetDocumentRange().TextRange, true);
+            using (ReadLockCookie.Create())
+            {
+                classDeclaration.GetSourceFile().Navigate(methodDeclaration.GetDocumentRange().TextRange, true);
+            }
         }
 
         private void NavigateToClass(ClassStructure clazz)
@@ -55,7 +59,10 @@ namespace ReSharperPlugin.DebugNotes.Rider.Model
             var declaredElement = declaredElements[0];
             var classDeclaration = declaredElement.GetDeclarations().First() as IClassLikeDeclaration;
 
-            classDeclaration.GetSourceFile().Navigate(classDeclaration.GetDocumentRange().TextRange, true);
+            using (ReadLockCookie.Create())
+            {
+                classDeclaration.GetSourceFile().Navigate(classDeclaration.GetDocumentRange().TextRange, true);
+            }
         }
 
         [NotNull, Pure]

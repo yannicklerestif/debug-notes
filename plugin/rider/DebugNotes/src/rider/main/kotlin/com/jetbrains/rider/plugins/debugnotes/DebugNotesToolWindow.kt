@@ -1,6 +1,9 @@
 package com.jetbrains.rider.plugins.debugnotes
 
 import com.intellij.ide.plugins.PluginManager
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.jcef.JBCefBrowser
@@ -64,23 +67,21 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             """.trimIndent(), "", 0
         )
     }
-    
-    private fun clickClass() {       
+
+    private fun clickClass() {
         browser.cefBrowser.executeJavaScript(
-                   "window.JavaPanelBridge = {" +
-                       "openInExternalBrowser : function(link) {" +
-                           bridgeQuery.inject("link") +
-                       "}" +
-                   "};",
-                   browser.cefBrowser.getURL(), 0)
+            """
+                window.JavaPanelBridge = {
+                    clickClass : function(classWithNamespace) {
+                        ${query.inject("classWithNamespace")}
+                    }
+                };
+            """.trimIndent(), "", 0
+        )
     }
-    
-    private fun openFile(file: String) {
-        logger.warn("About to Open the file")
-    }
-    
+
     private val logger = PluginManager.getLogger()
-    private var bridgeQuery: JBCefJSQuery
+
     init {
         // I use it to have a button to trigger stuff manually
         val debugMode = true
@@ -97,24 +98,27 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             container.add(button)
         }
         browser = JBCefBrowser()
-        bridgeQuery = JBCefJSQuery.create(browser)
-        bridgeQuery.addHandler {
-            openFile("Hello World")
-            null
-        }
-        
+
         browser.jbCefClient.addLoadHandler(object : CefLoadHandler {
-           override fun onLoadStart(p0: CefBrowser?, p1: CefFrame?, p2: CefRequest.TransitionType?) { }
-           override fun onLoadError(p0: CefBrowser?, p1: CefFrame?, p2: CefLoadHandler.ErrorCode?, p3: String?, p4: String?) { }
-           override fun onLoadingStateChange(p0: CefBrowser?, p1: Boolean, p2: Boolean, p3: Boolean) {
-               logger.warn("onLoadingStateChange")
-               clickClass()
-           }
-           override fun onLoadEnd(p0: CefBrowser?, p1: CefFrame?, p2: Int) { }
-        }, browser.getCefBrowser())  
-           
+            override fun onLoadStart(p0: CefBrowser?, p1: CefFrame?, p2: CefRequest.TransitionType?) {}
+            override fun onLoadError(
+                p0: CefBrowser?,
+                p1: CefFrame?,
+                p2: CefLoadHandler.ErrorCode?,
+                p3: String?,
+                p4: String?
+            ) {
+            }
+
+            override fun onLoadingStateChange(p0: CefBrowser?, p1: Boolean, p2: Boolean, p3: Boolean) {}
+
+            override fun onLoadEnd(p0: CefBrowser?, p1: CefFrame?, p2: Int) {
+                clickClass()
+            }
+        }, browser.cefBrowser)
+
         browser.loadURL("http://localhost:3000")
-                
+
         Disposer.register(project, browser)
         content = if (debugMode) {
             container!!.add(browser.component)
@@ -125,10 +129,14 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
         query = JBCefJSQuery.create(browser as JBCefBrowserBase)
         query.addHandler {
             val (namespace, className) = it.split(":")
-            model.navigateClass.fire(ClassStructure(namespace, className))
+            ApplicationManager.getApplication().invokeLater {
+                WriteAction.run<Throwable> {
+                    model.navigateClass.fire(ClassStructure(namespace, className))
+                }
+            }
             null
         }
-               
+
         model.method.advise(projectComponentLifetime) {
             logger.warn(it.toString())
             lazilyAddMethod(it)
