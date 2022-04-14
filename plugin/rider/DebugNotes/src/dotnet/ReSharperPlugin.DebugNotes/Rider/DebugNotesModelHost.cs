@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Util;
 
 
 namespace ReSharperPlugin.DebugNotes.Rider.Model
@@ -59,7 +60,8 @@ namespace ReSharperPlugin.DebugNotes.Rider.Model
             using (ReadLockCookie.Create())
             {
                 var classDeclaration = declaredElement.GetDeclarations().First() as IClassLikeDeclaration;
-                classDeclaration.GetSourceFile().Navigate(classDeclaration.GetDocumentRange().TextRange, true);
+                var startTextRange = TextRange.FromLength(classDeclaration.GetDocumentRange().TextRange.StartOffset, 1);
+                classDeclaration.GetSourceFile().Navigate(startTextRange, true);
             }
         }
 
