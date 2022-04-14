@@ -5,6 +5,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefBrowserBase
+import org.cef.browser.CefBrowser
+import org.cef.browser.CefFrame
+import org.cef.handler.*
+import org.cef.network.CefRequest
 import com.intellij.ui.jcef.JBCefJSQuery
 import com.jetbrains.rd.platform.util.getComponent
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
@@ -60,20 +64,23 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             """.trimIndent(), "", 0
         )
     }
-
-    private fun clickClass() {
+    
+    private fun clickClass() {       
         browser.cefBrowser.executeJavaScript(
-            """
-                window.JavaPanelBridge = {
-                    clickClass : function(class) {
-                        ${query.inject("class")}
-                    }
-                };
-            """.trimIndent(), "", 0);
+                   "window.JavaPanelBridge = {" +
+                       "openInExternalBrowser : function(link) {" +
+                           bridgeQuery.inject("link") +
+                       "}" +
+                   "};",
+                   browser.cefBrowser.getURL(), 0)
     }
-
+    
+    private fun openFile(file: String) {
+        logger.warn("About to Open the file")
+    }
+    
     private val logger = PluginManager.getLogger()
-
+    private var bridgeQuery: JBCefJSQuery
     init {
         // I use it to have a button to trigger stuff manually
         val debugMode = true
@@ -90,7 +97,24 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             container.add(button)
         }
         browser = JBCefBrowser()
+        bridgeQuery = JBCefJSQuery.create(browser)
+        bridgeQuery.addHandler {
+            openFile("Hello World")
+            null
+        }
+        
+        browser.jbCefClient.addLoadHandler(object : CefLoadHandler {
+           override fun onLoadStart(p0: CefBrowser?, p1: CefFrame?, p2: CefRequest.TransitionType?) { }
+           override fun onLoadError(p0: CefBrowser?, p1: CefFrame?, p2: CefLoadHandler.ErrorCode?, p3: String?, p4: String?) { }
+           override fun onLoadingStateChange(p0: CefBrowser?, p1: Boolean, p2: Boolean, p3: Boolean) {
+               logger.warn("onLoadingStateChange")
+               clickClass()
+           }
+           override fun onLoadEnd(p0: CefBrowser?, p1: CefFrame?, p2: Int) { }
+        }, browser.getCefBrowser())  
+           
         browser.loadURL("http://localhost:3000")
+                
         Disposer.register(project, browser)
         content = if (debugMode) {
             container!!.add(browser.component)
@@ -104,8 +128,7 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             model.navigateClass.fire(ClassStructure(namespace, className))
             null
         }
-        clickClass()
-
+               
         model.method.advise(projectComponentLifetime) {
             logger.warn(it.toString())
             lazilyAddMethod(it)
