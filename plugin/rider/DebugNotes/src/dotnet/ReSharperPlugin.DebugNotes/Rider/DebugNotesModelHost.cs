@@ -43,11 +43,10 @@ namespace ReSharperPlugin.DebugNotes.Rider.Model
             var declaredElements = FindTypesByQualifiedName(_solution, method.Namespace + "." + method.ClassName);
 
             var declaredElement = declaredElements[0];
-            var classDeclaration = declaredElement.GetDeclarations().First() as IClassLikeDeclaration;
-            var methodDeclaration = classDeclaration.MethodDeclarations.First(m => m.NameIdentifier.Name == method.MethodName);
-
             using (ReadLockCookie.Create())
             {
+                var classDeclaration = declaredElement.GetDeclarations().First() as IClassLikeDeclaration;
+                var methodDeclaration = classDeclaration.MethodDeclarations.First(m => m.NameIdentifier.Name == method.MethodName);
                 classDeclaration.GetSourceFile().Navigate(methodDeclaration.GetDocumentRange().TextRange, true);
             }
         }
@@ -57,10 +56,9 @@ namespace ReSharperPlugin.DebugNotes.Rider.Model
             var declaredElements = FindTypesByQualifiedName(_solution, clazz.Namespace + "." + clazz.ClassName);
 
             var declaredElement = declaredElements[0];
-            var classDeclaration = declaredElement.GetDeclarations().First() as IClassLikeDeclaration;
-
             using (ReadLockCookie.Create())
             {
+                var classDeclaration = declaredElement.GetDeclarations().First() as IClassLikeDeclaration;
                 classDeclaration.GetSourceFile().Navigate(classDeclaration.GetDocumentRange().TextRange, true);
             }
         }
