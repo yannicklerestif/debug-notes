@@ -3,7 +3,8 @@ import React from "react";
 import styles from "./DeletionInput.module.css";
 import {deleteThunk} from './deletionSlice';
 import {useAppDispatch} from '../../@app/hooks';
-import Button from "@material-ui/core/Button";
+import {IconButton} from "@material-ui/core";
+import {Delete} from "@material-ui/icons";
 
 export function DeletionInput(props: any) {
   const dispatch = useAppDispatch();
@@ -13,6 +14,8 @@ export function DeletionInput(props: any) {
   }
 
   return (
-      <Button variant="contained" className={styles.button} onClick={() => handleDelete()}>Delete</Button>
+    <IconButton className={styles.button} size='small' onClick={() => handleDelete()}>
+      <Delete />
+    </IconButton>
   );
 }

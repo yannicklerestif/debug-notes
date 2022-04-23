@@ -1,4 +1,4 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 import {RootState} from '../../@app/store';
 import {Argument, ArgumentDirection} from "./argument";
 
@@ -34,6 +34,7 @@ export const argumentSlice = createSlice({
   },
 });
 
+// eslint-disable-next-line no-empty-pattern
 export const {} = argumentSlice.actions;
 
 export default argumentSlice.reducer;

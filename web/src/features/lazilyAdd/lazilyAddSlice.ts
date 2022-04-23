@@ -51,14 +51,12 @@ const lazilyAddMethod = (lazyMethod: LazyMethod, dispatch: any, getState: any) =
 
 export function lazilyAddMethodThunk(lazyMethod: LazyMethod) {
   return function(dispatch: any, getState: any) {
-    console.log('calling lazily add method', lazyMethod);
     lazilyAddMethod(lazyMethod, dispatch, getState);
   }
 }
 
 export function lazilyAddCallThunk(lazyCall: LazyCall) {
   return function(dispatch: any, getState: any) {
-    console.log('calling lazily add call', lazyCall);
     lazilyAddMethod(lazyCall.sourceMethod, dispatch, getState);
     lazilyAddMethod(lazyCall.targetMethod, dispatch, getState);
     const state = getState();

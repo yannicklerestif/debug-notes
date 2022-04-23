@@ -50,24 +50,24 @@ export function LazilyAddInput(props: any) {
 
   // the button is for testing. will never be used in prod.
   return (
-      <div>
-      <Button variant="contained" className={styles.button} onClick={() => handleLazilyAddMethod({
-        namespace: 'SomeNewNamespace',
-        clazzName: 'SomeNewClass',
-        methodName: 'SomeNewMethodInTheNewClass'
-      })}>+Method</Button>
-      <Button variant="contained" className={styles.button} onClick={() => handleLazilyAddCall(
-          {
-            sourceMethod: {
-              namespace: 'SomeNewSourceNamespace',
-              clazzName: 'SomeNewSourceClass',
-              methodName: 'SomeNewSourceMethodInTheNewClass'
-            }, targetMethod: {
-              namespace: 'SomeNewTargetNamespace',
-              clazzName: 'SomeNewTargetClass',
-              methodName: 'SomeNewTargetMethodInTheNewClass'
-            }
-          })}>+Call</Button>
+      <div className={styles.LazilyAddInput}>
+        <Button variant="contained" className={styles.button} onClick={() => handleLazilyAddMethod({
+          namespace: 'SomeNewNamespace',
+          clazzName: 'SomeNewClass',
+          methodName: 'SomeNewMethodInTheNewClass'
+        })}>+Method</Button>
+        <Button variant="contained" className={styles.button} onClick={() => handleLazilyAddCall(
+            {
+              sourceMethod: {
+                namespace: 'SomeNewSourceNamespace',
+                clazzName: 'SomeNewSourceClass',
+                methodName: 'SomeNewSourceMethodInTheNewClass'
+              }, targetMethod: {
+                namespace: 'SomeNewTargetNamespace',
+                clazzName: 'SomeNewTargetClass',
+                methodName: 'SomeNewTargetMethodInTheNewClass'
+              }
+            })}>+Call</Button>
       </div>
   );
 }

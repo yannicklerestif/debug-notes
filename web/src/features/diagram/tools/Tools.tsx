@@ -27,10 +27,10 @@ export default function ToggleButtons() {
             exclusive
             onChange={handleTool}
         >
-            <ToggleButton value="select">
+            <ToggleButton size='small' value="select">
                 <NearMe />
             </ToggleButton>
-            <ToggleButton value="pan">
+            <ToggleButton size='small' value="pan">
                 <PanTool />
             </ToggleButton>
         </ToggleButtonGroup>

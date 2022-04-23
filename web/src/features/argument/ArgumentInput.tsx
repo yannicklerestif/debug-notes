@@ -2,7 +2,6 @@ import React from "react";
 
 import {useAppSelector, useAppDispatch} from '../../@app/hooks';
 import {selectSelectedCallsMethods} from "../selection/selectionSlice";
-import {Call} from "../call/call";
 import {Method} from "../method/method";
 
 function computeSelectedCallsString(selectedCallsMethods: [Method,Method][]) {

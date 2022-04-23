@@ -1,14 +1,9 @@
-.namespace-select {
-    font-size: 12px;
-    padding: 2px;
-    width: 400px;
-    margin-right: 4px;
+.ClazzInput {
+    margin-top: 10px;
+    margin-left: 10px;
 }
 
-.textbox {
-    font-size: 12px;
-    padding: 2px;
-    width: 400px;
-    margin-right: 4px;
+.AutoCompleteText {
+    font-size: 11pt;
 }
 

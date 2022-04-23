@@ -206,7 +206,6 @@ export function Diagram() {
           window.JavaPanelBridge.clickClass(`${clazz.namespace}:${clazz.clazzName}`);
       }
 
-      console.log('clazz', clazz);
       const node = graph.addNode(
         {
           shape: 'html',

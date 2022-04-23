@@ -1,3 +1,6 @@
+.LazilyAddInput {
+    display: none;
+}
 /* this is for testing, will never show in prod */
 .button {
     padding: 2px;

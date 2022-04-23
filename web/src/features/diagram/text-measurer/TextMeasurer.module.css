@@ -1,5 +1,6 @@
-.text-measurer {
-    position: absolute;
+.TextMeasurer {
+    position: fixed;
+    top: -50px;
     /* visibility: hidden;*/
     height: auto;
     width: auto;

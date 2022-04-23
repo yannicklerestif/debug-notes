@@ -1,8 +1,10 @@
 import React from "react";
 
-import {Button, IconButton} from "@material-ui/core";
-import { ZoomIn, ZoomOut } from "@material-ui/icons";
+import {IconButton} from "@material-ui/core";
+import {CenterFocusStrongOutlined, ZoomIn, ZoomOut} from "@material-ui/icons";
 import { graphContainer } from "../Diagram";
+
+import styles from './Magnifiers.module.css';
 
 export function Magnifiers(props: any) {
   const handleZoomIn = () => {
@@ -19,13 +21,15 @@ export function Magnifiers(props: any) {
 
   return (
       <div>
-        <IconButton onClick={() => handleZoomIn()}>
+        <IconButton  size='small' className={styles.button} onClick={() => handleZoomIn()}>
           <ZoomIn />
         </IconButton>
-        <IconButton onClick={() => handleZoomOut()}>
+        <IconButton  size='small' className={styles.button} onClick={() => handleZoomOut()}>
           <ZoomOut />
         </IconButton>
-        <Button onClick={() => handleResetZoom()}>RESET</Button>
+        <IconButton  size='small' className={styles.button} onClick={() => handleResetZoom()}>
+          <CenterFocusStrongOutlined />
+        </IconButton>
       </div>
   );
 }

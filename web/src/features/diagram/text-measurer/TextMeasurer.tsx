@@ -3,7 +3,7 @@ import styles from "./TextMeasurer.module.css";
 
 export function TextMeasurer(props: any) {
   return (
-    <span id="text-measurer" className={styles['text-measurer']} />
+    <span id="text-measurer" className={styles.TextMeasurer} />
   );
 }
 
@@ -11,7 +11,9 @@ export function TextMeasurer(props: any) {
 export const measureText =
   (text: string, classes: string[] = [], isHtml: boolean = false): { width: number, height: number } => {
     const div = document.getElementById("text-measurer")!
-    div.setAttribute('class', ['text-measurer', ...classes].join(' '));
+    // React changes class names so we find it again (hacky, admittedly)
+    const textMeasurerClass = div.getAttribute('class')!.split(' ').find(clazz => clazz.startsWith('TextMeasurer'));
+    div.setAttribute('class', [textMeasurerClass, ...classes].join(' '));
 
     if (isHtml) {
       div.textContent = text;

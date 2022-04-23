@@ -7,13 +7,11 @@ export function MySnackbar(props: any) {
   const [snackbarMessage, setSnackbarMessage] = useState('')
 
   if (props.snackbarMessage !== snackbarMessage) {
-    console.log('changing state for my snackbar => ', props.snackbarMessage);
     setSnackbarMessage(props.snackbarMessage);
   }
 
   // TODO handle concurrent messages
   const closeSnackbar = () => {
-    console.log('closing snackbar');
     setSnackbarMessage('');
     props.onSnackbarClosed();
   }
