@@ -2,16 +2,11 @@ package com.jetbrains.rider.plugins.debugnotes
 
 import com.intellij.ide.plugins.PluginManager
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefBrowserBase
-import org.cef.browser.CefBrowser
-import org.cef.browser.CefFrame
-import org.cef.handler.*
-import org.cef.network.CefRequest
 import com.intellij.ui.jcef.JBCefJSQuery
 import com.jetbrains.rd.platform.util.getComponent
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
@@ -20,8 +15,11 @@ import com.jetbrains.rider.debugnotes.model.ClassStructure
 import com.jetbrains.rider.debugnotes.model.MethodStructure
 import com.jetbrains.rider.debugnotes.model.debugNotesModel
 import com.jetbrains.rider.projectView.solution
-import java.awt.Dimension
-import java.awt.FlowLayout
+import org.cef.browser.CefBrowser
+import org.cef.browser.CefFrame
+import org.cef.handler.*
+import org.cef.network.CefRequest
+import java.awt.*
 import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -29,7 +27,8 @@ import javax.swing.JPanel
 class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponent(project) {
     val content: JComponent
     private val browser: JBCefBrowser
-    private val query: JBCefJSQuery
+    private val navigationQuery: JBCefJSQuery
+    private val cursorChangeQuery: JBCefJSQuery
 
     companion object {
         @Suppress("unused")
@@ -68,12 +67,15 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
         )
     }
 
-    private fun clickClass() {
+    private fun setupBrowserCallbacks() {
         browser.cefBrowser.executeJavaScript(
             """
                 window.JavaPanelBridge = {
                     clickClass : function(classWithNamespace) {
-                        ${query.inject("classWithNamespace")}
+                        ${navigationQuery.inject("classWithNamespace")}
+                    },
+                    changeCursor : function(cursorName) {
+                        ${cursorChangeQuery.inject("cursorName")}
                     }
                 };
             """.trimIndent(), "", 0
@@ -83,8 +85,10 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
     private val logger = PluginManager.getLogger()
 
     init {
-        // I use it to have a button to trigger stuff manually
-        val debugMode = true
+        // Set debugMode = true below to display a button you can use to trigger
+        // methods manually
+        val debugMode = false
+
         var container: JPanel? = null
         logger.warn("Starting tool window")
         if (debugMode) {
@@ -113,7 +117,7 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             override fun onLoadingStateChange(p0: CefBrowser?, p1: Boolean, p2: Boolean, p3: Boolean) {}
 
             override fun onLoadEnd(p0: CefBrowser?, p1: CefFrame?, p2: Int) {
-                clickClass()
+                setupBrowserCallbacks()
             }
         }, browser.cefBrowser)
 
@@ -126,8 +130,8 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
         } else {
             browser.component
         }
-        query = JBCefJSQuery.create(browser as JBCefBrowserBase)
-        query.addHandler {
+        navigationQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
+        navigationQuery.addHandler {
             val (namespace, className) = it.split(":")
             ApplicationManager.getApplication().invokeLater {
                 WriteAction.run<Throwable> {
@@ -136,7 +140,25 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             }
             null
         }
-
+        cursorChangeQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
+        cursorChangeQuery.addHandler {
+            // otherwise it's a cursor change
+            val newCursor: Int = when (it) {
+                "auto" -> Cursor.DEFAULT_CURSOR
+                "crosshair" -> Cursor.CROSSHAIR_CURSOR
+                // unfortunately, Swing doesn't have built-in grab cursors
+                "grab" -> Cursor.DEFAULT_CURSOR
+                "grabbing" -> Cursor.DEFAULT_CURSOR
+                "move" -> Cursor.MOVE_CURSOR
+                "pointer" -> Cursor.HAND_CURSOR
+                "text" -> Cursor.TEXT_CURSOR
+                else -> Cursor.DEFAULT_CURSOR
+            }
+            if (newCursor != content.cursor.type) {
+                content.cursor = Cursor(newCursor)
+            }
+            null
+        }
         model.method.advise(projectComponentLifetime) {
             logger.warn(it.toString())
             lazilyAddMethod(it)
@@ -146,6 +168,5 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             logger.warn(it.toString())
             lazilyAddCall(it)
         }
-
     }
 }

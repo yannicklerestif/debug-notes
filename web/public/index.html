@@ -28,6 +28,14 @@
   </head>
   <body  style="height: 100%">
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    <script>
+      document.addEventListener('mouseover',function(e){
+        let computed = window.getComputedStyle(e.target)["cursor"];
+        if (window.JavaPanelBridge !== undefined) {
+          window.JavaPanelBridge.changeCursor(computed);
+        }
+      });
+    </script>
     <div id="root" style="height: 100%"></div>
     <!--
       This HTML file is a template.
