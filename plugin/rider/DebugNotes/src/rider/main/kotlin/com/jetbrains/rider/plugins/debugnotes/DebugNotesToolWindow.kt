@@ -15,6 +15,7 @@ import com.jetbrains.rider.debugnotes.model.ClassStructure
 import com.jetbrains.rider.debugnotes.model.MethodStructure
 import com.jetbrains.rider.debugnotes.model.debugNotesModel
 import com.jetbrains.rider.projectView.solution
+import org.cef.CefApp
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.handler.*
@@ -102,6 +103,17 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             container.add(button)
         }
         browser = JBCefBrowser()
+        CefApp
+            .getInstance()
+            // we use a special domain (webview) to get all files requested
+            // with that scheme from Java resources
+            // I tried with a custom scheme first but it seems there is a problem with CORS if we do that
+            // (origin is null so requests are cross-domain and this is not allowed with a custom scheme)
+            .registerSchemeHandlerFactory(
+                "http",
+                "webview",
+                JavaResourceResourceHandlerFactory()
+            )
 
         browser.jbCefClient.addLoadHandler(object : CefLoadHandler {
             override fun onLoadStart(p0: CefBrowser?, p1: CefFrame?, p2: CefRequest.TransitionType?) {}
@@ -121,7 +133,13 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             }
         }, browser.cefBrowser)
 
-        browser.loadURL("http://localhost:3000")
+        // using an env variable to know if we are in dev mode.
+        // the env variable is set by the runIde gradle task.
+        // if it is set, we'll target the Webpack dev server
+        // if it isn't (production) we'll use the embedded Java resources.
+        val isDevEnvVariable = System.getenv("IS_DEV_ENV")
+        val isDevEnv = isDevEnvVariable != null && isDevEnvVariable.lowercase() == "true"
+        browser.loadURL(if (isDevEnv) "http://localhost:3000" else "http://webview/index.html")
 
         Disposer.register(project, browser)
         content = if (debugMode) {
@@ -142,7 +160,6 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
         }
         cursorChangeQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
         cursorChangeQuery.addHandler {
-            // otherwise it's a cursor change
             val newCursor: Int = when (it) {
                 "auto" -> Cursor.DEFAULT_CURSOR
                 "crosshair" -> Cursor.CROSSHAIR_CURSOR

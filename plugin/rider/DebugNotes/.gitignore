@@ -26,3 +26,6 @@ _dotTrace*
 # Generated files
 **/*.Generated.*
 /.idea/shelf/
+
+# Webview static files (they are generated)
+/src/rider/main/resources/webview/

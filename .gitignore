@@ -1,2 +1,5 @@
 /.idea/deployment.xml
 /.idea/webServers.xml
+/plugin/rider/private.pem
+/plugin/rider/chain.crt
+/plugin/rider/token

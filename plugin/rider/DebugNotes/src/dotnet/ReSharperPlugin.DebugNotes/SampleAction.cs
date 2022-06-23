@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Application.DataContext;
 using JetBrains.Application.UI.Actions;
 using JetBrains.Application.UI.ActionsRevised.Menu;
@@ -10,6 +11,7 @@ using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
+using NuGet.Protocol.Plugins;
 using ReSharperPlugin.DebugNotes.Rider.Model;
 
 namespace ReSharperPlugin.DebugNotes
@@ -29,6 +31,14 @@ namespace ReSharperPlugin.DebugNotes
 
         public void Execute(IDataContext context, DelegateExecute nextExecute)
         {
+            // when cursor is on a method declaration:
+            // - declaredElement is a IMethod, its value the declared method (the method under which the cursor is)
+            // - referenceElement is null
+            // - parentMethod is null
+            // when cursor is inside a method call:
+            // - declaredElement is also the method under which the cursor is
+            // - referenceElement is also the method under which the cursor is
+            // - parentMethod is the method from which the call is done
             IDeclaredElement declaredElement = context.GetData(PsiDataConstants.DECLARED_ELEMENT);
             ITreeNode referenceElement = context.GetData(PsiDataConstants.REFERENCE)?.GetTreeNode();
             MethodStructure method = null;

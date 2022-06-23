@@ -79,7 +79,25 @@ task compileDotNet {
     }
 }
 
+task buildWebview {
+    doLast {
+        def webDir = new File("${rootDir}/../../../web")
+        def webviewDir = new File("${rootDir}/src/rider/main/resources/webview")
+        exec {
+            executable "cmd"
+            args "/c npm run build"
+            workingDir webDir
+        }
+        delete "${webviewDir}"
+        copy {
+            from "${webDir}/build"
+            into "${webviewDir}"
+        }
+    }
+}
+
 buildPlugin {
+    dependsOn tasks['buildWebview']
     doLast {
         copy {
             from "${buildDir}/distributions/${rootProject.name}-${version}.zip"
@@ -110,14 +128,12 @@ intellij {
     type = 'RD'
     version = "${ProductVersion}"
     downloadSources = false
-    // TODO YR: necessary for forms.
-    // we can probably get rid of it if we stop using them.
-    instrumentCode = true
     // TODO: add plugins
     // plugins = ["uml", "com.jetbrains.ChooseRuntime:1.0.9"]
 }
 
 runIde {
+    environment "IS_DEV_ENV", "true"
     // Match Rider's default heap size of 1.5Gb (default for runIde is 512Mb)
     maxHeapSize = "1500m"
 
@@ -161,6 +177,12 @@ rdgen {
 }
 
 patchPluginXml {
+    intellij {
+        // without the following line, "since-build" and "until-build" are automatically overriden by this task in plugin.xml.
+        // we don't want to set an "until-build" (i.e. versions after which the plugin won't work), so we left it empty in plugin.xml.
+        // but without the following line this task adds it back.
+        updateSinceUntilBuild = false
+    }
     // TODO: See also org.jetbrains.changelog: https://github.com/JetBrains/gradle-changelog-plugin
     def changelogText = file("${rootDir}/CHANGELOG.md").text
     def changelogMatches = changelogText =~ /(?s)(-.+?)(?=##|$)/
@@ -194,8 +216,9 @@ prepareSandbox {
 }
 
 publishPlugin {
-    dependsOn buildPlugin
+    PublishToken = new File('../token').text
     token = "${PublishToken}"
+    channels = ['eap']
 
     doLast {
         exec {
