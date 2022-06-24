@@ -18,20 +18,20 @@ right from the IDE.</p>
   </description>
 
   <extensions defaultExtensionNs="com.intellij">
-    <applicationConfigurable groupId="language" instance="com.jetbrains.rider.plugins.debugnotes.SampleOptionsPage" id="SampleOptionsPage" />
     <toolWindow id="Debug Notes" secondary="true" icon="AllIcons.General.Modified" anchor="right"
                 factoryClass="org.debugnotes.toolWindow.DebugNotesToolWindowFactory"/>
   </extensions>
 
   <actions>
-    <action id="SampleAction"
-            class="com.jetbrains.rider.plugins.sampleplugin.SampleAction"
-            text="DebugNotes"
-            description="DebugNotes Description">
-      <override-text place="MainMenu" text="Do Something"/>
-      <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-    </action>
+    <group id="DebugNotesActionsGroup" popup="false">
+      <add-to-group group-id="EditorPopupMenu" />
+      <separator />
+      <action id="AddCallAction" class="com.jetbrains.rider.plugins.debugnotes.actions.AddCallAction" />
+      <action id="AddMethodAction" class="com.jetbrains.rider.plugins.debugnotes.actions.AddMethodAction" />
+      <separator />
+    </group>
   </actions>
+
   <project-components>
     <component>
       <implementation-class>com.jetbrains.rider.plugins.debugnotes.DebugNotesToolWindow</implementation-class>
