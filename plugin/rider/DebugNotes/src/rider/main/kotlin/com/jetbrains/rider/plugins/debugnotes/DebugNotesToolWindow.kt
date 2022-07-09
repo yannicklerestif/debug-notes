@@ -28,7 +28,8 @@ import javax.swing.JPanel
 class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponent(project) {
     val content: JComponent
     private val browser: JBCefBrowser
-    private val navigationQuery: JBCefJSQuery
+    private val navigationClassQuery: JBCefJSQuery
+    private val navigationMethodQuery: JBCefJSQuery
     private val cursorChangeQuery: JBCefJSQuery
 
     companion object {
@@ -73,7 +74,10 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             """
                 window.JavaPanelBridge = {
                     clickClass : function(classWithNamespace) {
-                        ${navigationQuery.inject("classWithNamespace")}
+                        ${navigationClassQuery.inject("classWithNamespace")}
+                    },
+                    clickMethod : function(methodWithClassAndNamespace) {
+                        ${navigationMethodQuery.inject("methodWithClassAndNamespace")}
                     },
                     changeCursor : function(cursorName) {
                         ${cursorChangeQuery.inject("cursorName")}
@@ -148,8 +152,10 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
         } else {
             browser.component
         }
-        navigationQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
-        navigationQuery.addHandler {
+        navigationClassQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
+        navigationMethodQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
+
+        navigationClassQuery.addHandler {
             val (namespace, className) = it.split(":")
             ApplicationManager.getApplication().invokeLater {
                 WriteAction.run<Throwable> {
@@ -158,6 +164,17 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             }
             null
         }
+
+        navigationMethodQuery.addHandler {
+            val (namespace, className, methodName) = it.split(":")
+            ApplicationManager.getApplication().invokeLater {
+                WriteAction.run<Throwable> {
+                    model.navigateMethod.fire(MethodStructure(namespace, className, methodName))
+                }
+            }
+            null
+        }
+
         cursorChangeQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
         cursorChangeQuery.addHandler {
             val newCursor: Int = when (it) {
@@ -176,7 +193,8 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             }
             null
         }
-        model.method.advise(projectComponentLifetime) {
+
+            model.method.advise(projectComponentLifetime) {
             logger.warn(it.toString())
             lazilyAddMethod(it)
         }

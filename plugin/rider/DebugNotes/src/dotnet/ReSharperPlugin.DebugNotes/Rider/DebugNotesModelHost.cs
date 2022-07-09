@@ -48,7 +48,9 @@ namespace ReSharperPlugin.DebugNotes.Rider.Model
             {
                 var classDeclaration = declaredElement.GetDeclarations().First() as IClassLikeDeclaration;
                 var methodDeclaration = classDeclaration.MethodDeclarations.First(m => m.NameIdentifier.Name == method.MethodName);
-                classDeclaration.GetSourceFile().Navigate(methodDeclaration.GetDocumentRange().TextRange, true);
+                var startTextRange =
+                    TextRange.FromLength(methodDeclaration.GetDocumentRange().TextRange.StartOffset, 1);
+                classDeclaration.GetSourceFile().Navigate(startTextRange, true);
             }
         }
 

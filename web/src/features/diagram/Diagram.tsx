@@ -243,6 +243,17 @@ export function Diagram() {
 
     for (let method of Object.values(diagramModel.diagramMethods)) {
       const isMethodSelected = !!diagramModel.selectedObjects.selectedMethods[method.methodId!];
+
+      // @ts-ignore
+      if(isMethodSelected && window.JavaPanelBridge !== undefined) {
+          console.log(method);
+          var parentClazz = diagramModel.diagramClazzes[method.classId];
+          console.log(diagramModel.diagramClazzes);
+          console.log(parentClazz);
+          // @ts-ignore
+          window.JavaPanelBridge.clickMethod(`${parentClazz.namespace}:${parentClazz.clazzName}:${method.methodName}`);
+      }
+
       const child = graph.addNode(
         {
           id: 'method_' + method.methodId,
