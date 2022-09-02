@@ -36,8 +36,8 @@ export function ClazzInput(props: any) {
   const handleCreateClazz = (namespace: string, newClazzName: string) => {
     let { width: clazzNameWidth, height: clazzNameHeight }: { width: number, height: number } = measureText(newClazzName, ['clazz-text']);
     let { width: namespaceWidth, height: namespaceHeight }: { width: number, height: number } = measureText(namespace, ['clazz-text']);
-    const textWidth = Math.max(clazzNameWidth, namespaceWidth) + 20;
-    const textHeight = clazzNameHeight + namespaceHeight + 20;
+    const textWidth = Math.max(clazzNameWidth, namespaceWidth);
+    const textHeight = clazzNameHeight + namespaceHeight;
     const newClazz: Clazz = {
       clazzId: undefined,
       clazzName: newClazzName,

@@ -12,9 +12,9 @@ export interface MethodState {
 
 const initialState: MethodState = {
   byId: {
-    '1': {methodId: '1', methodName: 'method 1', classId: 'a', x: 20, y: 150, width: 100, height: 40},
-    '22': {methodId: '22', methodName: 'method 22', classId: 'b', x: 400, y: 240, width: 100, height: 40},
-    '1234': {methodId: '1234', methodName: 'method 1234', classId: 'a', x: 200, y: 80, width: 100, height: 40},
+    '1': {methodId: '1', methodName: 'method1', classId: 'a', x: 20, y: 150, width: 54, height: 16},
+    '22': {methodId: '22', methodName: 'method22', classId: 'b', x: 400, y: 240, width: 62, height: 16},
+    '1234': {methodId: '1234', methodName: 'method1234', classId: 'a', x: 200, y: 80, width: 78, height: 16},
   },
   byClassId: {
     'a': {'1': true, '1234': true},

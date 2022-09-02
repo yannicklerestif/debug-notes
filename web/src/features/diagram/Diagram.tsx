@@ -1,6 +1,6 @@
 import {useAppDispatch, useAppSelector} from '../../@app/hooks';
 import React, {useEffect} from "react";
-import {Cell, Edge, Graph, Node} from '@antv/x6';
+import {Cell, CellView, Edge, Graph, Node} from '@antv/x6';
 
 import {selectDiagramModel} from "./diagramModel";
 import {moveMethods} from '../method/methodSlice';
@@ -117,7 +117,6 @@ export function Diagram() {
     if (isRebuildingGraph)
       return;
     const { type, id } = parseTypeAndId(cell.id);
-    console.log(`selecting ${type}, ${id}`);
     dispatchLater({selectionEventType: SelectionEventType.Select, type, id});
   }
 
@@ -125,7 +124,6 @@ export function Diagram() {
     if (isRebuildingGraph)
       return;
     const { type, id } = parseTypeAndId(cell.id);
-    console.log(`unselecting ${type}, ${id}`);
     dispatchLater({selectionEventType: SelectionEventType.Deselect, type, id});
   }
 
@@ -133,6 +131,27 @@ export function Diagram() {
     const width = document.getElementById('diagram-outer-container')!.clientWidth;
     const height = document.getElementById('diagram-outer-container')!.clientHeight;
     graph!.resize(width, height);
+  }
+
+  // @ts-ignore
+  const handleNavigateToClazz = (event: any, clazz: Clazz) => {
+    const qualifiedClassName = `${clazz.namespace}:${clazz.clazzName}`;
+    // @ts-ignore
+    if (window.JavaPanelBridge === undefined)
+      return;
+    // @ts-ignore
+    window.JavaPanelBridge.clickClass(qualifiedClassName);
+  }
+
+  // @ts-ignore
+  const handleNavigateToMethod = (event: any, method: Method) => {
+    const parentClazz = diagramModel.diagramClazzes[method.classId];
+    const qualifiedMethodName = `${parentClazz.namespace}:${parentClazz.clazzName}:${method.methodName}`;
+    // @ts-ignore
+    if (window.JavaPanelBridge === undefined)
+      return;
+    // @ts-ignore
+    window.JavaPanelBridge.clickMethod(qualifiedMethodName);
   }
 
   useEffect(() => {
@@ -151,6 +170,10 @@ export function Diagram() {
           // (it's a box around bounds the edge)
           showEdgeSelectionBox: false,
           multiple: true,
+          filter: (node) => {
+            // @ts-ignore
+            return !node.id.startsWith('method_link_') && !node.id.startsWith('clazz_link_');
+          }
         },
         scroller: {
           enabled: true,
@@ -158,7 +181,21 @@ export function Diagram() {
         },
         interacting: {
           arrowheadMovable: true,
-          nodeMovable: true,
+          nodeMovable: function(cellView: CellView) {
+            return !cellView.cell.id.startsWith('method_link_') && !cellView.cell.id.startsWith('clazz_link_');
+          },
+        },
+        connecting: {
+          // preventing linking to anything other than methods.
+          validateEdge: function({edge}) {
+            const cell = (edge as any)?.target?.cell as string;
+            const {type, id} = parseTypeAndId(cell);
+            console.log('type + id: ', type, id);
+            if (type !== 'method')
+              return false;
+            // (hacky) methods links are actually nodes, whose id start with method_link_ => excluding that too
+            return !id.startsWith('link_');
+          }
         }
       });
       graphContainer.graph = graph;
@@ -200,47 +237,63 @@ export function Diagram() {
     for (let clazz of Object.values(diagramModel.diagramClazzes)) {
       const isClazzSelected = !!diagramModel.selectedObjects.selectedClazzes[clazz.clazzId!];
 
-      // @ts-ignore
-      if(isClazzSelected && window.JavaPanelBridge !== undefined) {
-          // @ts-ignore
-          window.JavaPanelBridge.clickClass(`${clazz.namespace}:${clazz.clazzName}`);
-      }
-
+      // ------------------------------------------------------------------------------------------
+      //                                 CLAZZES
+      // ------------------------------------------------------------------------------------------
       const node = graph.addNode(
         {
           shape: 'html',
           id: 'clazz_' + clazz.clazzId,
           x: clazz.x,
           y: clazz.y,
-          width: clazz.textWidth,
-          height: clazz.textHeight,
+          // this is the width of the draggable part of the clazz. if the clazz text is narrower than the clazz
+          // (because there are methods further right), it is not bigger than the text
+          // 40 + 10 + 5: 40 for the link icon on the left + 10 padding right + 5 just to wiggle room to avoid wrapping
+          width: clazz.textWidth + 40 + 10 + 5,
+          height: clazz.textHeight + 20, // +20 for padding top and bottom
           zIndex: 1,
           html: () => {
             const background = document.createElement('div')
-            background.style.width = `${clazz.width}px`;
-            background.style.height = `${clazz.height}px`;
-            background.style.border = '2px solid #000';
-            background.style.background = '#2ECC71';
-            background.style['pointerEvents'] = 'none';
-            const text = document.createElement('span')
-            text.innerText = clazz.clazzName + '\n' + clazz.namespace;
-            text.setAttribute('class', 'clazz-text')
-            text.style.position = 'absolute';
-            text.style.textAlign = 'left';
-            text.style.left = '0';
-            text.style.top = '0';
-            text.style.padding = '10px';
-            text.style.width = `${clazz.textWidth - 20}px`;
-            text.style.height = `${clazz.textHeight - 20}px`;
-            background.appendChild(text)
+
+            background.style.width = `${clazz.width!}px`;
+            background.style.height = `${clazz.height!}px`;
+            background.className = 'diagram-clazz-background'
+            background.innerHTML = `
+<span class="clazz-text diagram-clazz-draggable-text" style="width:${clazz.textWidth}px; height: ${clazz.textHeight}px;">
+  ${clazz.clazzName}<br>${clazz.namespace}
+</span>`
             return background;
           },
         });
       if (isClazzSelected)
         graph.select(node);
+
+      const clazzLink = graph.addNode(
+        {
+          shape: 'html',
+          id: 'clazz_link_' + clazz.clazzId,
+          x: clazz.x,
+          y: clazz.y,
+          width: 30,
+          height: clazz.textHeight + 20, // 20 for padding * 2
+          html: () => {
+            const linkElement = document.createElement('div')
+            linkElement.onclick = (event) => {
+              handleNavigateToClazz(event, clazz);
+            }
+            linkElement.className = 'diagram-link';
+            linkElement.innerHTML = `<img src="/arrow-up-right-from-square-solid.svg" class="diagram-link-icon" alt="link" />`
+            return linkElement;
+          }
+        });
+
+      node.addChild(clazzLink);
       node.on('node:batch:stop', (e: any, f: any) => console.log('node event', e, f));
     }
 
+    // ------------------------------------------------------------------------------------------
+    //                                 METHODS
+    // ------------------------------------------------------------------------------------------
     for (let method of Object.values(diagramModel.diagramMethods)) {
       const isMethodSelected = !!diagramModel.selectedObjects.selectedMethods[method.methodId!];
 
@@ -256,12 +309,21 @@ export function Diagram() {
 
       const child = graph.addNode(
         {
+          shape: 'html',
           id: 'method_' + method.methodId,
           x: method.x,
           y: method.y,
-          width: method.width,
-          height: method.height,
-          label: method.methodName,
+          width: method.width + 40 + 10 + 3 * 2, // 40 + 10: size of the link + padding right
+          height: method.height + 20, // 20: padding
+          html: () => {
+            const background = document.createElement('div')
+            background.style.width = `${method.width! + 3 + 40 + 10 + 3}px`; // 40 + 10: link + padding right
+                                                                             // 5 * 2 additional padding for link anchors
+            background.style.height = `${method.height! + 20}px`; // 20: padding
+            background.className = 'diagram-method-background'
+            background.innerHTML = `<span class="clazz-text diagram-method-draggable-text">${method.methodName}</span>`
+            return background;
+          },
           ports: {
             groups: {
               in: {position: 'left', attrs: {circle: {r: 6, magnet: true,},},},
@@ -272,26 +334,38 @@ export function Diagram() {
               {id: 'out1', group: 'out',},
             ],
           },
-          attrs: {
-            rect: {
-              // use built-in selection box
-              // keeping it in case I change my mind
-              // 'stroke-dasharray': isMethodSelected ? '5,5' : undefined,
-            },
-            text: {
-              // TODO: This must now be duplicated to TextMeasurer.module.css so that the text measuring method works.
-              'font-size': 14,
-              'font-family': 'Arial, helvetica, sans-serif',
-            }
-          },
         }
       );
+
+      const methodLink = graph.addNode(
+        {
+          shape: 'html',
+          id: 'method_link_' + method.methodId,
+          x: method.x! + 3,
+          y: method.y,
+          width: 30,
+          height: method.height + 20, // 20: padding
+          html: () => {
+            const linkElement = document.createElement('div')
+            linkElement.onclick = (event) => {
+              handleNavigateToMethod(event, method);
+            }
+            linkElement.className = 'diagram-link';
+            linkElement.innerHTML = `<img src="/arrow-up-right-from-square-solid.svg" class="diagram-link-icon" alt="link" />`
+            return linkElement;
+          }
+        });
+
       const parent = graph.getCellById('clazz_' + method.classId);
       parent.addChild(child);
       if (isMethodSelected)
         graph.select(child);
+      child.addChild(methodLink);
     }
 
+    // ------------------------------------------------------------------------------------------
+    //                                 CALLS
+    // ------------------------------------------------------------------------------------------
     for (let call of Object.values(diagramModel.diagramCalls)) {
       const isCallSelected = !!diagramModel.selectedObjects.selectedCalls[call.callId!];
       const sourceNode = graph.getCellById('method_' + call.sourceMethodId);

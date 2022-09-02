@@ -20,8 +20,6 @@ interface MethodOptionType {
 }
 
 export function MethodInput(props: any) {
-  console.log('re-rendering MethodInput with props: ', props);
-
   const dispatch = useAppDispatch();
 
   const clazzesMap: Record<string, Clazz> = useAppSelector(selectClazzes);
@@ -53,8 +51,6 @@ export function MethodInput(props: any) {
 
   const handleCreateMethod = (clazzId: string, methodName: string) => {
     let {width, height}: { width: number, height: number } = measureText(methodName, ['text-measurer-method']);
-    width += 20;
-    height += 20;
     const method: Method = {
       height: height,
       width: width,

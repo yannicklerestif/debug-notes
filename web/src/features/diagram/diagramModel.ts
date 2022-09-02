@@ -15,14 +15,15 @@ export const selectDiagramModel = (state: RootState) => {
       if (minX == null || minY == null || maxX == null || maxY == null) {
         minX = method.x!;
         minY = method.y!;
-        maxX = method.x! + method.width!;
-        maxY = method.y! + method.height!;
+        maxX = method.x! + method.width! + 3 + 40 + 10 + 3; // 40 for link on the left, 10 for padding on the right,
+                                                            // 3 * 2 additional padding for calls anchors
+        maxY = method.y! + method.height! + 20; // 20 for padding
         continue;
       }
       minX = Math.min(method.x!, minX);
       minY = Math.min(method.y!, minY);
-      maxX = Math.max(method.x! + method.width!, maxX)
-      maxY = Math.max(method.y! + method.height!, maxY)
+      maxX = Math.max(method.x! + method.width! + 3 + 40 + 10 + 3, maxX)
+      maxY = Math.max(method.y! + method.height! + 20, maxY)
     }
     if (minX == null || minY == null || maxX == null || maxY == null) {
       // empty class, discarding
@@ -30,10 +31,11 @@ export const selectDiagramModel = (state: RootState) => {
     }
     const diagramClazz: Clazz = {
       ...clazz,
-      x: minX - 10,
-      y: minY - clazz.textHeight,
-      width: Math.max(clazz.textWidth, maxX - minX + 20),
-      height: maxY - minY + clazz.textHeight + 10
+      x: minX - 10, // -10 for padding around methods
+      y: minY - clazz.textHeight - 20, // -20 for padding around clazz text
+      // 40 + 10: link + padding on the right. 20: padding around methods
+      width: Math.max(clazz.textWidth + 40 + 10, maxX - minX + 20),
+      height: maxY - minY + clazz.textHeight + 20 + 10 // 20 + 10: padding around clazz text + bottom padding around methods
     };
     diagramClazzes[clazzId] = diagramClazz;
   }

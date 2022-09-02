@@ -14,8 +14,6 @@ export function LazilyAddInput(props: any) {
   const addTextDimensions = (lazyMethod: LazyMethod): LazyMethod => {
     // TODO: factorize with MethodInput.handleAddMethod and ClazzInput.handleCreateClazz
     let { width, height }: { width: number, height: number } = measureText(lazyMethod.methodName, ['text-measurer-method']);
-    width += 20;
-    height += 20;
     let {
       width: clazzNameWidth,
       height: clazzNameHeight
@@ -24,8 +22,8 @@ export function LazilyAddInput(props: any) {
       width: namespaceWidth,
       height: namespaceHeight
     }: { width: number, height: number } = measureText(lazyMethod.namespace, ['clazz-text']);
-    const clazzTextWidth = Math.max(clazzNameWidth, namespaceWidth) + 20;
-    const clazzTextHeight = clazzNameHeight + namespaceHeight + 20;
+    const clazzTextWidth = Math.max(clazzNameWidth, namespaceWidth);
+    const clazzTextHeight = clazzNameHeight + namespaceHeight;
     return { ...lazyMethod, width, height, clazzTextWidth, clazzTextHeight };
 
   }
