@@ -59,6 +59,8 @@ class Connection(var connection: URLConnection) {
                 cefResponse?.setMimeType("text/javascript")
             else if (url.contains(".html"))
                 cefResponse?.setMimeType("text/html")
+            else if (url.contains(".svg"))
+                cefResponse?.setMimeType("image/svg+xml")
             else
                 cefResponse?.setMimeType(connection.getContentType())
             responseLength?.set(inputStream.available())
