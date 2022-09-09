@@ -14,13 +14,29 @@ export function saveThunk() {
       clazzes: selectClazzesForSaving(rootState),
       namespaces: selectNamespacesForSaving(rootState),
     }
-    localStorage.setItem('currentProject', JSON.stringify(toSave));
+    // TODO factorize plugin vs standalone
+    const serializedState = JSON.stringify(toSave);
+    // @ts-ignore
+    if (window.JavaPanelBridge === undefined) {
+      localStorage.setItem('currentProject', JSON.stringify(toSave));
+    } else {
+      // @ts-ignore
+      window.JavaPanelBridge.save(serializedState);
+    }
   };
 }
 
 export function loadThunk() {
   return function(dispatch: any, getState: any) {
-    const toLoadString: string | null = localStorage.getItem('currentProject');
+    // TODO: factorize plugin vs standalone
+    let toLoadString: string | null;
+    // @ts-ignore
+    if (window.persistedState === undefined) {
+      toLoadString = localStorage.getItem('currentProject');
+    } else {
+      // @ts-ignore
+      toLoadString = window.persistedState == '' ? null : window.persistedState;
+    }
     if (toLoadString == null)
       return;
     const toLoad = JSON.parse(toLoadString);

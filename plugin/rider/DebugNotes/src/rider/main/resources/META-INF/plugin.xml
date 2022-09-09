@@ -20,6 +20,9 @@ right from the IDE.</p>
   <extensions defaultExtensionNs="com.intellij">
     <toolWindow id="Debug Notes" secondary="true" icon="AllIcons.General.Modified" anchor="right"
                 factoryClass="org.debugnotes.toolWindow.DebugNotesToolWindowFactory"/>
+    <projectService
+            serviceInterface = "com.jetbrains.rider.plugins.debugnotes.DebugNotesPersistenceService"
+            serviceImplementation = "com.jetbrains.rider.plugins.debugnotes.DebugNotesPersistenceServiceImpl"/>
   </extensions>
 
   <actions>

@@ -16,3 +16,5 @@ To create and publish a new version of the plugin:
   - Build the C# / Java part of the plugin
   - Package the plugin
   - Send it for approval to Jetbrains
+  - If the version doesn't exist yet, `publishPlugin` will complain that the `File does not exist`.
+This doesn't prevent the built / submission from working.

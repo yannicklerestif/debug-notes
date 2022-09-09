@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.debugnotes
 import com.intellij.ide.plugins.PluginManager
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.WriteAction
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.jcef.JBCefBrowser
@@ -31,6 +32,7 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
     private val navigationClassQuery: JBCefJSQuery
     private val navigationMethodQuery: JBCefJSQuery
     private val cursorChangeQuery: JBCefJSQuery
+    private val saveQuery: JBCefJSQuery
 
     companion object {
         @Suppress("unused")
@@ -38,6 +40,15 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
     }
 
     private val model = project.solution.debugNotesModel
+
+    private fun loadPersistedState() {
+        var serializedState = project.service<DebugNotesPersistenceService>().state
+        browser.cefBrowser.executeJavaScript(
+            """
+                window.persistedState = '${serializedState!!.serializedState}'
+            """.trimIndent(), "", 0
+        )
+    }
 
     private fun lazilyAddMethod(method: MethodStructure) {
         browser.cefBrowser.executeJavaScript(
@@ -81,6 +92,9 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
                     },
                     changeCursor : function(cursorName) {
                         ${cursorChangeQuery.inject("cursorName")}
+                    },
+                    save: function(serializedState) {
+                        ${saveQuery.inject("serializedState")}
                     }
                 };
             """.trimIndent(), "", 0
@@ -100,7 +114,6 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             container = JPanel(FlowLayout(FlowLayout.CENTER, 0, 0))
             val button = JButton("TEST")
             button.addActionListener {
-                logger.warn("Hello, World!")
                 lazilyAddMethod(MethodStructure("Some.Namespace", "SomeClass", "SomeMethodName"))
             }
             button.preferredSize = Dimension(100, 100)
@@ -120,7 +133,9 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             )
 
         browser.jbCefClient.addLoadHandler(object : CefLoadHandler {
-            override fun onLoadStart(p0: CefBrowser?, p1: CefFrame?, p2: CefRequest.TransitionType?) {}
+            override fun onLoadStart(p0: CefBrowser?, p1: CefFrame?, p2: CefRequest.TransitionType?) {
+                loadPersistedState()
+            }
             override fun onLoadError(
                 p0: CefBrowser?,
                 p1: CefFrame?,
@@ -194,7 +209,15 @@ class DebugNotesToolWindow(project: Project) : ProtocolSubscribedProjectComponen
             null
         }
 
-            model.method.advise(projectComponentLifetime) {
+        saveQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
+        // TODO: call each time the user changes something?
+        saveQuery.addHandler {
+            val newState = DebugNotesState(it)
+            project.service<DebugNotesPersistenceService>().updateState(newState)
+            null
+        }
+
+        model.method.advise(projectComponentLifetime) {
             logger.warn(it.toString())
             lazilyAddMethod(it)
         }
