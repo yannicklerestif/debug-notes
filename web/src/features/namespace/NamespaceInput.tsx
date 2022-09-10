@@ -41,7 +41,6 @@ export function NamespaceInput(props: any) {
         filterOptions={(options, params) => {
           const filtered = filter(options, params);
           // Suggest the creation of a new value if it doesn't exist
-          // console.log('value', value, 'params.inputValue', params.inputValue, 'params', params);
           if (params.inputValue !== '' && !namespacesOptions.some(nsOption => nsOption.name === params.inputValue)) {
             filtered.push({
               inputValue: params.inputValue,
@@ -98,7 +97,6 @@ export function NamespaceInput(props: any) {
         style={{width: 300}}
         renderInput={
           (params) => {
-            // console.log('rendering input', params);
             return <TextField {...params} label="Namespace" variant="outlined"/>
           }
         }

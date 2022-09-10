@@ -124,7 +124,6 @@ export function MethodInput(props: any) {
           if (params.inputValue !== '' && !methodsOptions.some(
             option => option.method.classId === formClazz?.clazzId!
               && option.method.methodName === params.inputValue)) {
-            console.log('will push a new "Add" item in the options. props: ', props);
             filtered.push({
               inputValue: params.inputValue,
               method: createFakeMethod(formClazz?.clazzId!, `Add "${params.inputValue}"`)

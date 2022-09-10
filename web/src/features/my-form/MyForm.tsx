@@ -28,7 +28,6 @@ export function MyForm() {
   const handleClazzChange = (clazz: Clazz) => {
     setFormNamespace(clazz.namespace);
     setFormClazz(clazz);
-    console.log('setting form clazz => ', clazz);
   }
 
   const handleMethodChange = (method: Method) => {

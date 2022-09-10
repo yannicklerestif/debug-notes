@@ -194,7 +194,6 @@ export function Diagram() {
           validateEdge: function({edge}) {
             const cell = (edge as any)?.target?.cell as string;
             const {type, id} = parseTypeAndId(cell);
-            console.log('type + id: ', type, id);
             if (type !== 'method')
               return false;
             // (hacky) methods links are actually nodes, whose id start with method_link_ => excluding that too
@@ -216,17 +215,14 @@ export function Diagram() {
       graph.on("node:move",
         ({x, y, node}) => {
         const position = node.getPosition();
-        console.log('start moving', x, y, node.id, position);
           startMoving(position.x, position.y, node);
         });
       graph.on('node:moved',
         ({x, y, node}) => {
           const position = node.getPosition();
-          console.log('end moving  ', x, y, node.id, position);
           endMoving(position.x, position.y, node);
         });
       graph.on('edge:connected', ({ edge }) => {
-        console.log(edge);
         handleEdgeConnected(edge);
       });
       // workaround to resize the scrolling area when the window is resized.
@@ -339,10 +335,7 @@ export function Diagram() {
 
       // @ts-ignore
       if(isMethodSelected && window.JavaPanelBridge !== undefined) {
-          console.log(method);
           var parentClazz = diagramModel.diagramClazzes[method.classId];
-          console.log(diagramModel.diagramClazzes);
-          console.log(parentClazz);
           // @ts-ignore
           window.JavaPanelBridge.clickMethod(`${parentClazz.namespace}:${parentClazz.clazzName}:${method.methodName}`);
       }
