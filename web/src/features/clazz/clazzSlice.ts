@@ -26,8 +26,9 @@ export const selectClazzesForSaving = (state: RootState) => {
   return state.clazz.byId;
 }
 
-export const selectClazzesForNamespace = (state: RootState) => {
-  return Object.keys(state.clazz.byNamespace).map(clazzId => state.clazz.byId[clazzId]);
+// returns a dict with the namespaces as keys and "true" as values
+export const selectUsedNamespaces = (state: RootState) => {
+  return Object.assign({}, ...Object.keys(state.clazz.byNamespace).map(ns => ({[ns]: true})));
 }
 
 export const clazzSlice = createSlice({
