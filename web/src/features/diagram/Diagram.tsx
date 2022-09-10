@@ -3,6 +3,8 @@ import React, {useEffect} from "react";
 import {Cell, CellView, Edge, Graph, Node} from '@antv/x6';
 
 import {selectDiagramModel} from "./diagramModel";
+import {selectNamespacesMap} from "../namespace/namespaceSlice";
+import {selectClazzes} from '../clazz/clazzSlice';
 import {moveMethods} from '../method/methodSlice';
 import {addCall} from '../call/callSlice';
 import {MoveEvent} from "./moveEvent";
@@ -25,6 +27,8 @@ export const graphContainer: GraphContainer = { graph: null };
 
 export function Diagram() {
   const diagramModel = useAppSelector(selectDiagramModel);
+  const allClazzes = useAppSelector(selectClazzes);
+  const allNamespaces = useAppSelector(selectNamespacesMap);
   const dispatch = useAppDispatch();
 
   const parseTypeAndId = (diagramId: string) => {
@@ -172,7 +176,7 @@ export function Diagram() {
           multiple: true,
           filter: (node) => {
             // @ts-ignore
-            return !node.id.startsWith('method_link_') && !node.id.startsWith('clazz_link_');
+            return !node.id.startsWith('fake_');
           }
         },
         scroller: {
@@ -182,7 +186,7 @@ export function Diagram() {
         interacting: {
           arrowheadMovable: true,
           nodeMovable: function(cellView: CellView) {
-            return !cellView.cell.id.startsWith('method_link_') && !cellView.cell.id.startsWith('clazz_link_');
+            return !cellView.cell.id.startsWith('fake_');
           },
         },
         connecting: {
@@ -194,7 +198,7 @@ export function Diagram() {
             if (type !== 'method')
               return false;
             // (hacky) methods links are actually nodes, whose id start with method_link_ => excluding that too
-            return !id.startsWith('link_');
+            return !id.startsWith('fake_');
           }
         }
       });
@@ -234,6 +238,42 @@ export function Diagram() {
 
     graph.clearCells();
 
+    // if we don't have any methods, the diagram will be empty.
+    // we show an information panel helping the user getting started
+    if (Object.keys(diagramModel.diagramMethods).length === 0) {
+      let placeHolderInnerHtml =
+        `Please use the editor's context menu<br>
+        to add classes and methods to the diagram,</br>`
+      if (Object.keys(allNamespaces).length === 0) {
+        placeHolderInnerHtml += 'or manually add a namespace to add classes to.';
+      } else if (Object.keys(allClazzes).length === 0) {
+        placeHolderInnerHtml += 'or manually add a class to add methods to.'
+      } else {
+        placeHolderInnerHtml += 'or manually add methods.'
+      }
+      const placeHolderWidth = 400;
+      const placeHolderHeight = 100;
+      let visibleArea = graph.scroller.widget?.getVisibleArea()!;
+      const placeHolderX = visibleArea.x + visibleArea.width / 2 - placeHolderWidth / 2;
+      const placeHolderY = visibleArea.y + visibleArea.height / 2 - placeHolderHeight / 2;
+      graph.addNode(
+        {
+          shape: 'html',
+          id: 'fake_placeholder',
+          x: placeHolderX,
+          y: placeHolderY,
+          width: placeHolderWidth,
+          height: placeHolderHeight,
+          html: () => {
+            const placeholder = document.createElement('div')
+            placeholder.innerHTML = `<div class="placeholder">${placeHolderInnerHtml}</div>`
+            placeholder.className = 'placeholder-container'
+            return placeholder;
+          },
+        }
+      )
+    }
+
     for (let clazz of Object.values(diagramModel.diagramClazzes)) {
       const isClazzSelected = !!diagramModel.selectedObjects.selectedClazzes[clazz.clazzId!];
 
@@ -271,7 +311,7 @@ export function Diagram() {
       const clazzLink = graph.addNode(
         {
           shape: 'html',
-          id: 'clazz_link_' + clazz.clazzId,
+          id: 'fake_clazz_link_' + clazz.clazzId,
           x: clazz.x,
           y: clazz.y,
           width: 30,
@@ -340,7 +380,7 @@ export function Diagram() {
       const methodLink = graph.addNode(
         {
           shape: 'html',
-          id: 'method_link_' + method.methodId,
+          id: 'fake_method_link_' + method.methodId,
           x: method.x! + 3,
           y: method.y,
           width: 30,
@@ -396,7 +436,6 @@ export function Diagram() {
         graph.select(edge);
       }
     }
-
     isRebuildingGraph = false;
   });
 

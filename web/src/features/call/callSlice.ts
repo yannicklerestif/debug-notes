@@ -8,10 +8,7 @@ export interface CallState {
 }
 
 const initialState: CallState = {
-  byId: {
-    '1-1234': { callId: '1-1234', sourceMethodId: '1', targetMethodId: '1234' },
-    '1-22': { callId: '1-22', sourceMethodId: '1', targetMethodId: '22' },
-  },
+  byId: {},
 };
 
 export const selectCalls = (state: RootState) => {

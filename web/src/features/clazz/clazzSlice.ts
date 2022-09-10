@@ -9,13 +9,8 @@ export interface ClazzState {
 }
 
 const initialState: ClazzState = {
-  byId: {
-    'a': {clazzId: 'a', clazzName: 'ClassA', namespace: 'Some.Namespace', x: 20, y: 100, textWidth: 115, textHeight: 32, width: undefined, height: undefined },
-    'b': {clazzId: 'b', clazzName: 'ClassB', namespace: 'Some.Namespace', x: 20, y: 200, textWidth: 115, textHeight: 32, width: undefined, height: undefined },
-  },
-  byNamespace: {
-    'Some.Namespace': { 'a': true, 'b': true},
-  }
+  byId: {},
+  byNamespace: {}
 };
 
 export const selectClazzes = (state: RootState) => {

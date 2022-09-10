@@ -6,11 +6,7 @@ export interface NamespaceState {
 }
 
 const initialState: NamespaceState = {
-  byName: {
-    '': true,
-    'Some.Namespace': true,
-    'Another.Namespace': true,
-  }
+  byName: {}
 };
 
 export const selectNamespacesMap = (state: RootState) => {
