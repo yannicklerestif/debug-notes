@@ -333,13 +333,6 @@ export function Diagram() {
     for (let method of Object.values(diagramModel.diagramMethods)) {
       const isMethodSelected = !!diagramModel.selectedObjects.selectedMethods[method.methodId!];
 
-      // @ts-ignore
-      if(isMethodSelected && window.JavaPanelBridge !== undefined) {
-          var parentClazz = diagramModel.diagramClazzes[method.classId];
-          // @ts-ignore
-          window.JavaPanelBridge.clickMethod(`${parentClazz.namespace}:${parentClazz.clazzName}:${method.methodName}`);
-      }
-
       const child = graph.addNode(
         {
           shape: 'html',
