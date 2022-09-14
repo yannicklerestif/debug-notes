@@ -218,7 +218,10 @@ prepareSandbox {
 publishPlugin {
     PublishToken = new File('../token').text
     token = "${PublishToken}"
-    channels = ['eap']
+    // uncomment the following line to publish to the EAP channel.
+    // leave as is to publish to the default (stable) channel
+    // https://plugins.jetbrains.com/docs/intellij/deployment.html
+    // channels = ['eap']
 
     doLast {
         exec {
