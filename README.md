@@ -12,7 +12,7 @@ The image below shows what code elements look like in Debug Notes:
 # 2. Rider Plugin
 If you're not using C#, feel free to skip to the next paragraph!
 
-If you're using C#, you can use Debug Notes [Rider plugin](https://plugins.jetbrains.com/plugin/19357-debug-notes) to build the diagram right from Rider, and navigate to your code by clicking the diagram.
+If you're using C#, you can use the Debug Notes [Rider plugin](https://plugins.jetbrains.com/plugin/19357-debug-notes) to build the diagram right from Rider, and navigate to your code by clicking the diagram.
 You can see it in action below:
 
 ![demo_rider](./documentation/demo-rider-800.gif)
@@ -20,7 +20,8 @@ You can see it in action below:
 # 3. Online Editor
 You can also create and update diagram elements manually, which works for any language.
 
-You can do that in [Debug Notes' online application](https://yannicklerestif.com/debug-notes), or in the plugin view in Rider if you're using C#.
+You can do that in the Debug Notes [online application](https://yannicklerestif.com/debug-notes), or in the plugin view in Rider if you're using C#.
 
 Here is a demo:
+
 ![online demo](./documentation/online-demo.gif)
