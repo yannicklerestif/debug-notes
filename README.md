@@ -15,9 +15,7 @@ If you're not using C#, feel free to skip to the next paragraph!
 If you're using C#, you can use Debug Notes [Rider plugin](https://plugins.jetbrains.com/plugin/19357-debug-notes) to build the diagram right from Rider, and navigate to your code by clicking the diagram.
 You can see it in action below:
 
-<img src="./documentation/debug-notes-demo2.gif" width="1500">
-
-![demo_rider](./documentation/test.gif)
+![demo_rider](./documentation/demo-rider-800.gif)
 
 # 3. Online Editor
 You can also create and update diagram elements manually, which works for any language.
