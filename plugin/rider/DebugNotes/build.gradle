@@ -221,8 +221,9 @@ publishPlugin {
     // uncomment the following line to publish to the EAP channel.
     // leave as is to publish to the default (stable) channel
     // https://plugins.jetbrains.com/docs/intellij/deployment.html
+    // to see plugins in the EAP channel, add the following URL to plugins repositories
+    // (settings / plugins): https://plugins.jetbrains.com/plugins/eap/list
     // channels = ['eap']
-
     doLast {
         exec {
             executable "dotnet"

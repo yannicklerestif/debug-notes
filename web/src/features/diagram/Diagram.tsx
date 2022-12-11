@@ -318,7 +318,7 @@ export function Diagram() {
               handleNavigateToClazz(event, clazz);
             }
             linkElement.className = 'diagram-link';
-            linkElement.innerHTML = `<img src="/arrow-up-right-from-square-solid.svg" class="diagram-link-icon" alt="link" />`
+            linkElement.innerHTML = `<img src="./arrow-up-right-from-square-solid.svg" class="diagram-link-icon" alt="link" />`
             return linkElement;
           }
         });
@@ -377,7 +377,7 @@ export function Diagram() {
               handleNavigateToMethod(event, method);
             }
             linkElement.className = 'diagram-link';
-            linkElement.innerHTML = `<img src="/arrow-up-right-from-square-solid.svg" class="diagram-link-icon" alt="link" />`
+            linkElement.innerHTML = `<img src="./arrow-up-right-from-square-solid.svg" class="diagram-link-icon" alt="link" />`
             return linkElement;
           }
         });
