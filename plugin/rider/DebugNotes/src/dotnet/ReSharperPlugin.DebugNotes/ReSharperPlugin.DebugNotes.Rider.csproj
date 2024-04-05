@@ -8,6 +8,7 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <LangVersion>8.0</LangVersion>
     <AssemblyName>ReSharperPlugin.DebugNotes</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
     <IsPackable>false</IsPackable>

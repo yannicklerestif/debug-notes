@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.RdBackend.Common.Features;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Navigation.NavigationExtensions;
+using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
