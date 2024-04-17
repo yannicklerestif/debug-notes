@@ -2,6 +2,7 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RootState} from '../../@app/store';
 import {Method} from "./method";
 import {v4 as uuidv4} from 'uuid';
+import {snapToGrid} from '../diagram/snapToGrid';
 
 import {MoveEvent} from '../diagram/moveEvent';
 
@@ -80,8 +81,14 @@ export const methodSlice = createSlice({
           console.error(new Error('wrong move event type (should be method)'), moveEvent);
           continue;
         }
-        state.byId[moveEvent.id].x! += moveEvent.x! - moveEvent.oldX;
-        state.byId[moveEvent.id].y! += moveEvent.y! - moveEvent.oldY;
+        // snapping method to grids:
+        // the built-in method (from X6) for snapping is not enough because when classes are snapped they don't
+        // snap the methods correctly.
+        // the following is kind of a work-around (it would be best that the snapping is done when the objects are
+        // moved, so now they will move a little bit atfer we are done dragging) but at least the objects are at the
+        // right place.
+        state.byId[moveEvent.id].x = snapToGrid(state.byId[moveEvent.id].x! + moveEvent.x! - moveEvent.oldX);
+        state.byId[moveEvent.id].y = snapToGrid(state.byId[moveEvent.id].y! + moveEvent.y! - moveEvent.oldY);
       }
     },
     deleteMethods: (state, action: PayloadAction<string[]>) => {
