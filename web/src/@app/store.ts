@@ -5,6 +5,7 @@ import clazzReducer from '../features/clazz/clazzSlice';
 import deletionReducer from '../features/clazz/clazzSlice';
 import methodReducer from '../features/method/methodSlice';
 import namespaceReducer from '../features/namespace/namespaceSlice';
+import diagramPositionReducer from '../features/diagram/diagramPosition/diagramPositionSlice';
 import persistenceReducer from '../features/persistence/persistenceSlice';
 import selectionReducer from '../features/selection/selectionSlice';
 
@@ -16,6 +17,7 @@ export const store = configureStore({
     deletion: deletionReducer,
     method: methodReducer,
     namespace: namespaceReducer,
+    diagramPosition: diagramPositionReducer,
     persistence: persistenceReducer,
     selection: selectionReducer,
   },

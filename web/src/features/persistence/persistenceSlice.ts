@@ -4,6 +4,7 @@ import {loadCalls, selectCallsForSaving} from '../call/callSlice';
 import {loadClazzes, selectClazzesForSaving} from "../clazz/clazzSlice";
 import {loadNamespaces, selectNamespacesForSaving} from "../namespace/namespaceSlice";
 import {loadMethods, selectMethodsForSaving} from "../method/methodSlice";
+import {loadDiagramPosition, selectDiagramPositionForSaving} from "../diagram/diagramPosition/diagramPositionSlice";
 
 export function saveThunk() {
   return function(dispatch: any, getState: () => RootState) {
@@ -13,6 +14,7 @@ export function saveThunk() {
       methods: selectMethodsForSaving(rootState),
       clazzes: selectClazzesForSaving(rootState),
       namespaces: selectNamespacesForSaving(rootState),
+      diagramPosition: selectDiagramPositionForSaving(rootState),
     }
     // TODO factorize plugin vs standalone
     const serializedState = JSON.stringify(toSave);
@@ -44,6 +46,7 @@ export function loadThunk() {
     dispatch(loadMethods(toLoad.methods));
     dispatch(loadClazzes(toLoad.clazzes));
     dispatch(loadNamespaces(toLoad.namespaces));
+    dispatch(loadDiagramPosition(toLoad.diagramPosition));
   }
 }
 export const persistenceSlice = createSlice({

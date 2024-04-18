@@ -11,6 +11,7 @@ import {MoveEvent} from "./moveEvent";
 import {selectDeselectCells, SelectionEvent, SelectionEventType} from '../selection/selectionSlice';
 
 import styles from './Diagram.module.css';
+import {setDiagramPosition} from "./diagramPosition/diagramPositionHelpers";
 
 let graph: Graph | null = null;
 
@@ -228,11 +229,34 @@ export function Diagram() {
       // workaround to resize the scrolling area when the window is resized.
       // see https://github.com/antvis/X6/discussions/1913
       window.addEventListener('resize', () => handleWindowResize(graph!));
+
+      // we only set the diagram position the first time the diagram is displayed:
+      // this is because right now we don't track the diagram position when the user pans / zooms
+      setDiagramPosition(diagramModel.diagramPosition);
     }
 
     isRebuildingGraph = true;
 
     graph.clearCells();
+
+    for (let i = 0; i <= 500; i += 50) {
+      // temp: grid with rects
+      graph.addNode({
+        x: i,
+        y: 0,
+        width: 0.1,
+        height: 500,
+        label: i,
+      });
+
+      graph.addNode({
+        x: 0,
+        y: i,
+        width: 500,
+        height: 0.1,
+        label: i,
+      });
+    }
 
     // if we don't have any methods, the diagram will be empty.
     // we show an information panel helping the user getting started

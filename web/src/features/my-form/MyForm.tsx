@@ -6,7 +6,7 @@ import {PersistenceInput} from "../persistence/PersistenceInput";
 import {DeletionInput} from "../deletion/DeletionInput";
 import styles from "./MyForm.module.css";
 import Tools from "../diagram/tools/Tools";
-import { Magnifiers } from "../diagram/tools/Magnifiers";
+import { DiagramPositionInput } from "../diagram/diagramPosition/DiagramPositionInput";
 import {TextMeasurer} from "../diagram/text-measurer/TextMeasurer";
 import {LazilyAddInput} from "../lazilyAdd/LazilyAddInput";
 import {Clazz} from "../clazz/clazz";
@@ -58,7 +58,7 @@ export function MyForm() {
         <PersistenceInput />
         <DeletionInput />
         <Tools />
-        <Magnifiers />
+        <DiagramPositionInput />
         {/*Not shown, but useful because it receives inputs from outside
            when the application is embedded */}
         <LazilyAddInput />

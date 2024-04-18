@@ -4,9 +4,9 @@ import {IconButton} from "@material-ui/core";
 import {CenterFocusStrongOutlined, ZoomIn, ZoomOut} from "@material-ui/icons";
 import { graphContainer } from "../Diagram";
 
-import styles from './Magnifiers.module.css';
+import styles from './DiagramPosition.module.css';
 
-export function Magnifiers(props: any) {
+export function DiagramPositionInput(props: any) {
   const handleZoomIn = () => {
     graphContainer.graph!.zoom(0.2);
   }
