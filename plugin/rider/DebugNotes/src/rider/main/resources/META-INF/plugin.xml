@@ -6,7 +6,7 @@
   <!-- the idea version below (determines compatible Rider versions) will not -->
   <!-- be overriden by Gradle because overriding has explicitly disabled -->
   <!-- (see build.gradle/publishPlugin) -->
-  <idea-version since-build="212" />
+  <idea-version since-build="232" />
   <depends>com.intellij.modules.rider</depends>
 
   <description>
