@@ -239,24 +239,26 @@ export function Diagram() {
 
     graph.clearCells();
 
-    for (let i = 0; i <= 500; i += 50) {
-      // temp: grid with rects
-      graph.addNode({
-        x: i,
-        y: 0,
-        width: 0.1,
-        height: 500,
-        label: i,
-      });
-
-      graph.addNode({
-        x: 0,
-        y: i,
-        width: 500,
-        height: 0.1,
-        label: i,
-      });
-    }
+    // showing coordinates on the screen, for debugging purposes.
+    // keeping it for now, will delete eventually
+    // for (let i = 0; i <= 500; i += 50) {
+    //   // temp: grid with rects
+    //   graph.addNode({
+    //     x: i,
+    //     y: 0,
+    //     width: 0.1,
+    //     height: 500,
+    //     label: i,
+    //   });
+    //
+    //   graph.addNode({
+    //     x: 0,
+    //     y: i,
+    //     width: 500,
+    //     height: 0.1,
+    //     label: i,
+    //   });
+    // }
 
     // if we don't have any methods, the diagram will be empty.
     // we show an information panel helping the user getting started
