@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugNotes.Backend", "DebugNotes.Backend\DebugNotes.Backend.csproj", "{E81DC23E-31B1-4E27-93E1-806471A7D470}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E81DC23E-31B1-4E27-93E1-806471A7D470}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E81DC23E-31B1-4E27-93E1-806471A7D470}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E81DC23E-31B1-4E27-93E1-806471A7D470}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E81DC23E-31B1-4E27-93E1-806471A7D470}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

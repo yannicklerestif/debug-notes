@@ -1,0 +1,4 @@
+**/obj/
+**/bin/
+.idea/
+debug-notes-backend.sln.DotSettings.user
