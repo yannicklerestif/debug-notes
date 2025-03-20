@@ -1,3 +1,4 @@
+using System.Text.Json;
 using NLog;
 using LogLevel = NLog.LogLevel;
 
@@ -12,7 +13,7 @@ public class PubSubQueue(string type, string userId)
     
     private readonly Dictionary<string, SubscriberState> _subscribers = new();
 
-    public Task SendMessageAsync(string message)
+    public Task SendMessageAsync(JsonElement message)
     {
         lock (_subscribers)
         {
@@ -29,7 +30,7 @@ public class PubSubQueue(string type, string userId)
         return Task.CompletedTask;
     }
 
-    public Task<(SubscriberStateType, string)> WaitForMessageAsync(string subscriberId, bool connect)
+    public Task<(SubscriberStateType, JsonElement)> WaitForMessageAsync(string subscriberId, bool connect)
     {
         lock (_subscribers)
         {
@@ -48,11 +49,11 @@ public class PubSubQueue(string type, string userId)
             // first subscriber had connectivity issues
             if (subscriber.StateType != SubscriberStateType.Current)
             {
-                return Task.FromResult((SubscriberStateType.ShouldDisconnect, (string) null));
+                return Task.FromResult((SubscriberStateType.ShouldDisconnect, JsonDocument.Parse("null").RootElement));
             }
             
             // Otherwise we're simply renewing the lease, just renew the tcs
-            subscriber.Tcs = new TaskCompletionSource<(SubscriberStateType state, string message)>();
+            subscriber.Tcs = new TaskCompletionSource<(SubscriberStateType state, JsonElement message)>();
             return WaitOrTimeout(_subscribers[subscriberId].Tcs.Task);
         }
     }
@@ -79,7 +80,7 @@ public class PubSubQueue(string type, string userId)
                 continue;
             }
             // If the subscriber is still listening, tell them to disconnect
-            kvp.Value.Tcs.TrySetResult((SubscriberStateType.ShouldDisconnect, (string) null));
+            kvp.Value.Tcs.TrySetResult((SubscriberStateType.ShouldDisconnect, JsonDocument.Parse("null").RootElement));
             if (kvp.Value.StateType != SubscriberStateType.ShouldDisconnect)
             {
                 Logger.Log(LogLevel.Info, $" {_type} | {_userId} | ---> Disconnecting subscriber {kvp.Key}");
@@ -90,19 +91,19 @@ public class PubSubQueue(string type, string userId)
         _subscribers[subscriberId] = new SubscriberState
         {
             StateType = SubscriberStateType.Current,
-            Tcs = new TaskCompletionSource<(SubscriberStateType state, string message)>()
+            Tcs = new TaskCompletionSource<(SubscriberStateType state, JsonElement message)>()
         };
     }
 
-    private async Task<(SubscriberStateType, string)> WaitOrTimeout(Task<(SubscriberStateType, string)> originalTask)
+    private async Task<(SubscriberStateType, JsonElement)> WaitOrTimeout(Task<(SubscriberStateType, JsonElement)> originalTask)
     {
         try
         {
             return await originalTask.WaitAsync(TimeSpan.FromMinutes(1));
         }
-        catch (TaskCanceledException)
+        catch (TimeoutException e)
         {
-            return (SubscriberStateType.Current, null);
+            return (SubscriberStateType.Current, JsonDocument.Parse("null").RootElement);
         }
     }
 }

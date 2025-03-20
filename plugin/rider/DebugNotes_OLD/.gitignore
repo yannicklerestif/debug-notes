@@ -1,0 +1,31 @@
+# Build artifacts
+[Bb]in/
+[Oo]bj/
+**/[Bb]in/
+**/[Oo]bj/
+build
+output
+.gradle
+.tmp
+
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
+*.cache
+
+# IDEs
+/.idea/*.iml
+/.idea/*.xml
+/.idea/.idea.*/*.iml
+/.idea/.idea.*/.idea/*.xml
+.vs
+_ReSharper*
+_dotTrace*
+
+# Generated files
+**/*.Generated.*
+/.idea/shelf/
+
+# Webview static files (they are generated)
+/src/rider/main/resources/webview/

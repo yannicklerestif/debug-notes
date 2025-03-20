@@ -2,7 +2,7 @@ package com.jetbrains.rider.plugins.debugnotes.actions
 
 import com.jetbrains.rider.actions.base.RiderAnAction
 import com.intellij.icons.AllIcons
-
+        
 class AddCallAction : RiderAnAction(
         "AddCallAction",
         "Add Call to Debug Notes",

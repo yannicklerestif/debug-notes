@@ -16,6 +16,11 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Debug Notes Backend", Version = "v1" });
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "AllowAll",
+        policy => { policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
+});
 
 var app = builder.Build();
 
@@ -37,5 +42,6 @@ if (app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
+app.UseCors("AllowAll");
 app.MapControllers();
 app.Run();

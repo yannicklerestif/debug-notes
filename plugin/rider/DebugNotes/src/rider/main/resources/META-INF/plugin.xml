@@ -1,37 +1,17 @@
 <idea-plugin require-restart="true">
   <id>com.jetbrains.rider.plugins.debugnotes</id>
-  <name>Debug Notes</name>
+  <name>DebugNotes</name>
   <version>_PLACEHOLDER_</version>
-  <vendor url="https://github.com/yannicklerestif/debug-notes">Yannick Le Restif</vendor>
-  <!-- the idea version below (determines compatible Rider versions) will not -->
-  <!-- be overriden by Gradle because overriding has explicitly disabled -->
-  <!-- (see build.gradle/publishPlugin) -->
-  <idea-version since-build="232" />
+  <vendor url="https://project-url">Author</vendor>
+  <idea-version since-build="_PLACEHOLDER_" until-build="_PLACEHOLDER_" />
   <depends>com.intellij.modules.rider</depends>
 
   <description>
-    <!-- This description is used in Jetbrains' marketplace-->
 <![CDATA[
-<p>Debug Notes allows you to draw a diagram of your code while you're debugging it,
-right from the IDE.</p>
-
-<p>Features:</p>
-<ul>
-<li>Diagramming tool with built-in namespace, class, method and call concepts</li>
-<li>Automatically create namespaces, classes, methods and calls from your code</li>
-<li>Use the diagram to navigate to your code</li>
-</ul>
+<p>Sample description</p>
 ]]>
   </description>
-
-  <extensions defaultExtensionNs="com.intellij">
-    <toolWindow id="Debug Notes" secondary="true" icon="AllIcons.General.Modified" anchor="right"
-                factoryClass="org.debugnotes.toolWindow.DebugNotesToolWindowFactory"/>
-    <projectService
-            serviceInterface = "com.jetbrains.rider.plugins.debugnotes.DebugNotesPersistenceService"
-            serviceImplementation = "com.jetbrains.rider.plugins.debugnotes.DebugNotesPersistenceServiceImpl"/>
-  </extensions>
-
+  
   <actions>
     <group id="DebugNotesActionsGroup" popup="false">
       <add-to-group group-id="EditorPopupMenu" />
@@ -41,11 +21,5 @@ right from the IDE.</p>
       <separator />
     </group>
   </actions>
-
-  <project-components>
-    <component>
-      <implementation-class>com.jetbrains.rider.plugins.debugnotes.DebugNotesToolWindow</implementation-class>
-    </component>
-  </project-components>
-
+  
 </idea-plugin>

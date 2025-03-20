@@ -1,8 +1,7 @@
 # Build artifacts
+/.intellijPlatform/
 [Bb]in/
 [Oo]bj/
-**/[Bb]in/
-**/[Oo]bj/
 build
 output
 .gradle
@@ -15,6 +14,7 @@ output
 *.cache
 
 # IDEs
+.idea/
 /.idea/*.iml
 /.idea/*.xml
 /.idea/.idea.*/*.iml
@@ -22,10 +22,3 @@ output
 .vs
 _ReSharper*
 _dotTrace*
-
-# Generated files
-**/*.Generated.*
-/.idea/shelf/
-
-# Webview static files (they are generated)
-/src/rider/main/resources/webview/

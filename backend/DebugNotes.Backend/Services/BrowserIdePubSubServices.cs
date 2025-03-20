@@ -1,16 +1,18 @@
+using System.Text.Json;
+
 namespace DebugNotes.Backend.Services;
 
 public class BrowserIdePubSubServices : IBrowserIdePubSubServices
 {
     Dictionary<string, BrowserIdePubSubService> _services = new Dictionary<string, BrowserIdePubSubService>();
 
-    public Task IdeSendMessageAsync(string userId, string ideId, string message)
+    public Task IdeSendMessageAsync(string userId, string ideId, JsonElement message)
     {
         var service = GetOrCreateService(userId);
         return service.IdeSendMessageAsync(ideId, message);
     }
 
-    public Task<(SubscriberStateType, string)> IdeWaitForMessageAsync(string userId, string ideId, bool connect)
+    public Task<(SubscriberStateType, JsonElement)> IdeWaitForMessageAsync(string userId, string ideId, bool connect)
     {
         var service = GetOrCreateService(userId);
         return service.IdeWaitForMessageAsync(ideId, connect);
@@ -22,13 +24,13 @@ public class BrowserIdePubSubServices : IBrowserIdePubSubServices
         return service.IdeAckDeconnection(ideId);
     }
 
-    public Task BrowserSendMessageAsync(string userId, string browserId, string message)
+    public Task BrowserSendMessageAsync(string userId, string browserId, JsonElement message)
     {
         var service = GetOrCreateService(userId);
         return service.BrowserSendMessageAsync(browserId, message);
     }
 
-    public Task<(SubscriberStateType, string)> BrowserWaitForMessageAsync(string userId, string browserId, bool connect)
+    public Task<(SubscriberStateType, JsonElement)> BrowserWaitForMessageAsync(string userId, string browserId, bool connect)
     {
         var service = GetOrCreateService(userId);
         return service.BrowserWaitForMessageAsync(browserId, connect);

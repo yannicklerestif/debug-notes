@@ -1,3 +1,4 @@
+using System.Text.Json;
 using DebugNotes.Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +15,7 @@ public class IdeController : ControllerBase
     }
 
     [HttpPost("send_message")]
-    public async Task<ActionResult<string>> SendMessage([FromQuery] string userId, [FromQuery] string ideId, [FromBody] string message)
+    public async Task<ActionResult<string>> SendMessage([FromQuery] string userId, [FromQuery] string ideId, [FromBody] JsonElement message)
     {
         await _service.IdeSendMessageAsync(userId, ideId, message);
         return Ok("Message sent successfully");

@@ -7,9 +7,7 @@ namespace ReSharperPlugin.DebugNotes
 {
     [ZoneDefinition]
     // [ZoneDefinitionConfigurableFeature("Title", "Description", IsInProductSection: false)]
-    public interface IDebugNotesZone : IPsiLanguageZone,
-        IRequire<ILanguageCSharpZone>,
-        IRequire<DaemonZone>
+    public interface IDebugNotesZone : IZone
     {
     }
 }

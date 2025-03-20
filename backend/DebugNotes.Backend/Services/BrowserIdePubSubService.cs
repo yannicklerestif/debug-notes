@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace DebugNotes.Backend.Services;
 
 public class BrowserIdePubSubService(string userId)
@@ -7,13 +9,13 @@ public class BrowserIdePubSubService(string userId)
     private readonly PubSubQueue _ideSubscribers = new PubSubQueue(type: "IDE", userId: userId);
     private readonly PubSubQueue _browserSubscribers = new PubSubQueue(type: "Browser", userId: userId);
     
-    public Task IdeSendMessageAsync(string ideId, string message)
+    public Task IdeSendMessageAsync(string ideId, JsonElement message)
     {
         // IDE sends message => browser subscribers
         return _browserSubscribers.SendMessageAsync(message);
     }
 
-    public Task<(SubscriberStateType, string)> IdeWaitForMessageAsync(string ideId, bool connect)
+    public Task<(SubscriberStateType, JsonElement)> IdeWaitForMessageAsync(string ideId, bool connect)
     {
         // IDE waits for message => IDE subscribers
         return _ideSubscribers.WaitForMessageAsync(ideId, connect);
@@ -25,13 +27,13 @@ public class BrowserIdePubSubService(string userId)
         return _ideSubscribers.AckDeconnection(ideId);
     }
     
-    public Task BrowserSendMessageAsync(string browserId, string message)
+    public Task BrowserSendMessageAsync(string browserId, JsonElement message)
     {
         // Browser sends message => IDE subscribers
         return _ideSubscribers.SendMessageAsync(message);
     }
 
-    public Task<(SubscriberStateType, string)> BrowserWaitForMessageAsync(string browserId, bool connect)
+    public Task<(SubscriberStateType, JsonElement)> BrowserWaitForMessageAsync(string browserId, bool connect)
     {
         // Browser waits for message => Browser subscribers
         return _browserSubscribers.WaitForMessageAsync(browserId, connect);

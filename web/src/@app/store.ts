@@ -8,6 +8,7 @@ import namespaceReducer from '../features/namespace/namespaceSlice';
 import diagramPositionReducer from '../features/diagram/diagramPosition/diagramPositionSlice';
 import persistenceReducer from '../features/persistence/persistenceSlice';
 import selectionReducer from '../features/selection/selectionSlice';
+import ideListenerMiddleware from '../features/lazilyAdd/ideListenerMiddleware';
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,8 @@ export const store = configureStore({
     persistence: persistenceReducer,
     selection: selectionReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(ideListenerMiddleware),
 });
 
 export type AppDispatch = typeof store.dispatch;

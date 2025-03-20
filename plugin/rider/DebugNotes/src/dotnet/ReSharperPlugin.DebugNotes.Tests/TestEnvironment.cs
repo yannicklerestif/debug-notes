@@ -11,13 +11,12 @@ using NUnit.Framework;
 
 namespace ReSharperPlugin.DebugNotes.Tests
 {
-
     [ZoneDefinition]
     public class DebugNotesTestEnvironmentZone : ITestsEnvZone, IRequire<PsiFeatureTestZone>, IRequire<IDebugNotesZone> { }
 
     [ZoneMarker]
     public class ZoneMarker : IRequire<ICodeEditingZone>, IRequire<ILanguageCSharpZone>, IRequire<DebugNotesTestEnvironmentZone> { }
-    
+
     [SetUpFixture]
     public class DebugNotesTestsAssembly : ExtensionTestEnvironmentAssembly<DebugNotesTestEnvironmentZone> { }
 }
