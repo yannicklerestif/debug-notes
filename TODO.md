@@ -1,4 +1,14 @@
 # TODO
+## Next Steps
+- Modify the plugin to add the possibility to set a userId in the settings. We need that because it's not ok to publish the plugin with a hardcoded userId, and we want the plugin in the store otherwise it's too much of a pain to use it.
+- Setup a server hosted in the cloud to provide the endpoints
+  - Setup the plugin to use the server
+  - Setup the frontend to use the server
+- Make sure sending objects to create works
+- Modify the build on the plugin side: at least publish the new version. Provide a "dev" mode that targets the local server would be cool if it's easy
+- Modify the build on the web side so that it is exposed by the backend
+
+
 ## Backend
 On the backend side
 - Of course the main thing is to create a server hosted in the Cloud to provide the endpoints
