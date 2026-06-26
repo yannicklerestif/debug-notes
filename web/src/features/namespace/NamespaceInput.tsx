@@ -1,10 +1,10 @@
 import React, {useState} from "react";
-import TextField from '@material-ui/core/TextField';
+import Autocomplete, {createFilterOptions} from "@mui/material/Autocomplete";
+import TextField from '@mui/material/TextField';
 
 import {addNamespace, selectNamespacesList} from './namespaceSlice';
 import {useAppDispatch, useAppSelector} from '../../@app/hooks';
 import {MySnackbar} from "../../@shared/snackbar/MySnackbar";
-import {Autocomplete, createFilterOptions} from "@material-ui/lab";
 
 import styles from "./NamespaceInput.module.css";
 
@@ -69,7 +69,7 @@ export function NamespaceInput(props: any) {
           return label;
         }}
         handleHomeEndKeys
-        id="free-solo-with-text-demo"
+        id="namespace-input"
         onChange={(event, newNamespaceOption, reason) => {
           if (newNamespaceOption == null)
             return;
@@ -93,7 +93,10 @@ export function NamespaceInput(props: any) {
           }
         }}
         options={namespacesOptions}
-        renderOption={(option) => option.name === '' ? 'NONE' : option.name}
+        renderOption={(optionProps, option) => {
+          const {key, ...liProps} = optionProps;
+          return <li key={key} {...liProps}>{option.name === '' ? 'NONE' : option.name}</li>;
+        }}
         style={{width: 300}}
         renderInput={
           (params) => {

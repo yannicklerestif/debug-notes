@@ -1,4 +1,4 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {createSelector, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RootState} from '../../@app/store';
 
 export interface NamespaceState {
@@ -17,9 +17,10 @@ export const selectNamespacesForSaving = (state: RootState) => {
   return state.namespace.byName;
 }
 
-export const selectNamespacesList = (state: RootState) => {
-  return Object.keys(state.namespace.byName).sort((a, b) => a.localeCompare(b));
-}
+export const selectNamespacesList = createSelector(
+  selectNamespacesMap,
+  (namespaces) => Object.keys(namespaces).sort((a, b) => a.localeCompare(b))
+);
 
 export const namespaceSlice = createSlice({
   name: 'namespace',

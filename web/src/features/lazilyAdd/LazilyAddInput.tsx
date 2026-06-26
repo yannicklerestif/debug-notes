@@ -3,7 +3,7 @@ import React from "react";
 import styles from "./LazilyAddInput.module.css";
 import {lazilyAddMethodThunk, lazilyAddCallThunk} from './lazilyAddSlice';
 import {useAppDispatch} from '../../@app/hooks';
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 import {LazyMethod} from "./lazyMethod";
 import {measureText} from "../diagram/text-measurer/TextMeasurer";
 import {LazyCall} from "./lazyCall";

@@ -1,19 +1,32 @@
+import {createSelector} from "@reduxjs/toolkit";
 import {RootState} from "../../@app/store";
 import {Method} from "../method/method";
 import {Clazz} from "../clazz/clazz";
 import {selectSelectedObjects} from "../selection/selectionSlice";
 import {selectDiagramPosition} from "./diagramPosition/diagramPositionSlice";
 
-export const selectDiagramModel = (state: RootState) => {
+export const selectDiagramModel = createSelector(
+  [
+    (state: RootState) => state.clazz.byId,
+    (state: RootState) => state.method.byClassId,
+    (state: RootState) => state.method.byId,
+    (state: RootState) => state.call.byId,
+    selectSelectedObjects,
+    selectDiagramPosition,
+  ],
+  (clazzesById, methodsByClassId, methodsById, callsById, selectedObjects, diagramPosition) => {
   const diagramMethods: Record<string, Method> = {};
   const diagramClazzes: Record<string, Clazz> = {};
-  for (let clazzId in state.clazz.byId) {
-    const clazz = state.clazz.byId[clazzId];
-    let minX = undefined, minY = undefined, maxX = undefined, maxY = undefined;
-    for (let methodId in state.method.byClassId[clazzId]) {
-      const method = state.method.byId[methodId];
+  for (let clazzId in clazzesById) {
+    const clazz = clazzesById[clazzId];
+    let minX: number | undefined = undefined;
+    let minY: number | undefined = undefined;
+    let maxX: number | undefined = undefined;
+    let maxY: number | undefined = undefined;
+    for (let methodId in methodsByClassId[clazzId]) {
+      const method = methodsById[methodId];
       diagramMethods[methodId] = method;
-      if (minX == null || minY == null || maxX == null || maxY == null) {
+      if (minX === undefined || minY === undefined || maxX === undefined || maxY === undefined) {
         minX = method.x!;
         minY = method.y!;
         maxX = method.x! + method.width! + 3 + 40 + 10 + 3; // 40 for link on the left, 10 for padding on the right,
@@ -26,7 +39,7 @@ export const selectDiagramModel = (state: RootState) => {
       maxX = Math.max(method.x! + method.width! + 3 + 40 + 10 + 3, maxX)
       maxY = Math.max(method.y! + method.height! + 20, maxY)
     }
-    if (minX == null || minY == null || maxX == null || maxY == null) {
+    if (minX === undefined || minY === undefined || maxX === undefined || maxY === undefined) {
       // empty class, discarding
       continue;
     }
@@ -41,10 +54,10 @@ export const selectDiagramModel = (state: RootState) => {
     diagramClazzes[clazzId] = diagramClazz;
   }
   return {
-    diagramCalls: state.call.byId,
+    diagramCalls: callsById,
     diagramClazzes,
     diagramMethods,
-    selectedObjects: selectSelectedObjects(state),
-    diagramPosition: selectDiagramPosition(state)
+    selectedObjects,
+    diagramPosition
   };
-}
+});

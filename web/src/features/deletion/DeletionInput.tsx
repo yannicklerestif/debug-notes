@@ -3,8 +3,8 @@ import React from "react";
 import styles from "./DeletionInput.module.css";
 import {deleteThunk} from './deletionSlice';
 import {useAppDispatch} from '../../@app/hooks';
-import {IconButton} from "@material-ui/core";
-import {Delete} from "@material-ui/icons";
+import IconButton from "@mui/material/IconButton";
+import {Delete} from "@mui/icons-material";
 
 export function DeletionInput(props: any) {
   const dispatch = useAppDispatch();

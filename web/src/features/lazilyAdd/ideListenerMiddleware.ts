@@ -6,22 +6,6 @@ const START_WORKER = "START_WORKER";
 const STOP_WORKER = "STOP_WORKER";
 const WORKER_TICK = "WORKER_TICK";
 
-// Define worker actions
-interface StartWorkerAction {
-    type: typeof START_WORKER;
-}
-
-interface StopWorkerAction {
-    type: typeof STOP_WORKER;
-}
-
-interface WorkerTickAction {
-    type: typeof WORKER_TICK;
-    payload: string;
-}
-
-type WorkerActionTypes = StartWorkerAction | StopWorkerAction | WorkerTickAction;
-
 let connected: boolean = false;
 let browserId = uuidv4();
 
@@ -32,12 +16,12 @@ function wait(ms: number): Promise<void> {
 async function startPollingLoop() {
     let status = 0;
     console.log("Starting loop...");
-    while (status == 0) {
+    while (status === 0) {
         try {
             const connect = !connected;
             const response = await fetch(`http://localhost:5151/api/browser/wait_for_message?`
                 + `userId=12345&browserId=${browserId}&connect=${connect}`);
-            if (response.status != 200) {
+            if (response.status !== 200) {
                 await wait(5000);
                 continue;
             }
@@ -45,9 +29,9 @@ async function startPollingLoop() {
             // status = 0: connected
             const data = await response.json();
             status = data.state;
-            if (status == 0) {
+            if (status === 0) {
                 const message = data.message;
-                if (message == null) {
+                if (message === null || message === undefined) {
                     // This is the "regular" timeout, just keep polling
                     console.log("No data, continuing...");
                     continue;
@@ -56,7 +40,7 @@ async function startPollingLoop() {
                 // TODO: It's a little weird to use methods registered into window like this,
                 //       but that's how it was done before (because of the CEF browser)
                 //       so I'm keeping it for now.
-                if (message.Parent != null) {
+                if (message.Parent !== null && message.Parent !== undefined) {
                     // message.Parent != null: this is a call
                     (window! as any).lazilyAddCall({
                         sourceMethod: {
@@ -90,35 +74,10 @@ async function startPollingLoop() {
 }
 
 // Worker Middleware
-const ideListenerMiddleware: Middleware = (store) => {
-    let intervalId: NodeJS.Timeout | null = null;
-
+const ideListenerMiddleware: Middleware = () => {
     startPollingLoop();
     
-    return (next) => (action: WorkerActionTypes) => {
-        /*switch (action.type) {
-            case START_WORKER:
-                if (!intervalId) {
-                    console.log("Worker started...");
-                    intervalId = setInterval(() => {
-                        console.log("Worker tick...");
-                        store.dispatch({ type: WORKER_TICK, payload: new Date().toISOString() });
-                    }, 5000);
-                }
-                break;
-
-            case STOP_WORKER:
-                if (intervalId) {
-                    console.log("Worker stopped...");
-                    clearInterval(intervalId);
-                    intervalId = null;
-                }
-                break;
-
-            default:
-                break;
-        }
-*/
+    return (next) => (action: unknown) => {
         return next(action);
     };
 };

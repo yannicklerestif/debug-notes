@@ -1,7 +1,7 @@
 import React from 'react';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import {NearMe, PanTool } from '@material-ui/icons';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import {NearMe, PanTool } from '@mui/icons-material';
 import { graphContainer} from "../Diagram";
 import {Graph} from "@antv/x6";
 

@@ -37,9 +37,9 @@ export function loadThunk() {
       toLoadString = localStorage.getItem('currentProject');
     } else {
       // @ts-ignore
-      toLoadString = window.persistedState == '' ? null : window.persistedState;
+      toLoadString = window.persistedState === '' ? null : window.persistedState;
     }
-    if (toLoadString == null)
+    if (toLoadString === null)
       return;
     const toLoad = JSON.parse(toLoadString);
     dispatch(loadCalls(toLoad.calls));

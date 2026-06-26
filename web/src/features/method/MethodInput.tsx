@@ -1,5 +1,6 @@
 import React, {useState} from "react";
-import TextField from '@material-ui/core/TextField';
+import Autocomplete, {createFilterOptions} from "@mui/material/Autocomplete";
+import TextField from '@mui/material/TextField';
 
 import {selectClazzes} from '../clazz/clazzSlice';
 import {addMethod, selectMethods} from './methodSlice';
@@ -8,8 +9,6 @@ import {Clazz} from "../clazz/clazz";
 import {Method} from "./method";
 import {MySnackbar} from "../../@shared/snackbar/MySnackbar";
 import {measureText} from "../diagram/text-measurer/TextMeasurer";
-import {Autocomplete, createFilterOptions} from "@material-ui/lab";
-
 import styles from "./MethodInput.module.css";
 
 const filter = createFilterOptions<MethodOptionType>();
@@ -135,7 +134,7 @@ export function MethodInput(props: any) {
         clearOnBlur
         selectOnFocus
         handleHomeEndKeys
-        id="free-solo-with-text-demo"
+        id="method-input"
         options={methodsOptions}
         // label (inside the text input)
         getOptionLabel={(option) => {
@@ -155,16 +154,20 @@ export function MethodInput(props: any) {
           return label;
         }}
         // render (in the dropdown)
-        renderOption={(option) => {
+        renderOption={(optionProps, option) => {
+          const {key, ...liProps} = optionProps;
           // Add "xxx" option created automatically
+          let label;
           if (option.inputValue != null && option.inputValue !== '') {
             if (props.formClazz == null)
-              return `Please select a class to add method ${option.inputValue}`
-            return `Add ${option.inputValue} to ${clazzLabel(formClazz?.clazzId!)}`
+              label = `Please select a class to add method ${option.inputValue}`
+            else
+              label = `Add ${option.inputValue} to ${clazzLabel(formClazz?.clazzId!)}`
+          } else {
+            label = `${clazzLabel(option.method.classId)}.${option.method.methodName}`
           }
-          return `${clazzLabel(option.method.classId)}.${option.method.methodName}`
-        }
-        }
+          return <li key={key} {...liProps}>{label}</li>
+        }}
         style={{width: 300}}
         freeSolo
         renderInput={

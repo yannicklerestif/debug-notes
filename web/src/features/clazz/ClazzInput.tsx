@@ -1,12 +1,12 @@
 import React, {useState} from "react";
-import TextField from '@material-ui/core/TextField';
+import Autocomplete, {createFilterOptions} from "@mui/material/Autocomplete";
+import TextField from '@mui/material/TextField';
 
 import {addClazz, selectClazzes} from '../clazz/clazzSlice';
 import {useAppSelector, useAppDispatch} from '../../@app/hooks';
 import {Clazz} from "./clazz";
 import {MySnackbar} from "../../@shared/snackbar/MySnackbar";
 import {measureText} from "../diagram/text-measurer/TextMeasurer";
-import {Autocomplete, createFilterOptions} from "@material-ui/lab";
 
 import styles from "./ClazzInput.module.css";
 
@@ -133,7 +133,7 @@ export function ClazzInput(props: any) {
         clearOnBlur
         selectOnFocus
         handleHomeEndKeys
-        id="free-solo-with-text-demo"
+        id="clazz-input"
         options={clazzesOptions}
         // label (inside the text input)
         getOptionLabel={(option) => {
@@ -153,15 +153,20 @@ export function ClazzInput(props: any) {
           return label;
         }}
         // render (in the dropdown)
-        renderOption={(option) => {
+        renderOption={(optionProps, option) => {
+          const {key, ...liProps} = optionProps;
           // Add "xxx" option created automatically
+          let label;
           if (option.inputValue != null && option.inputValue !== '') {
             if (props.formNamespace == null)
-              return `Please select a namespace to add class ${option.inputValue}`
-            return `Add ${option.inputValue} to ${option.clazz.namespace}`
+              label = `Please select a namespace to add class ${option.inputValue}`
+            else
+              label = `Add ${option.inputValue} to ${option.clazz.namespace}`
+          } else {
+            label = `${option.clazz.namespace}.${option.clazz.clazzName}`
           }
-          return `${option.clazz.namespace}.${option.clazz.clazzName}`}
-        }
+          return <li key={key} {...liProps}>{label}</li>
+        }}
         style={{width: 300}}
         freeSolo
         renderInput={

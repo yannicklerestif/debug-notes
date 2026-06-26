@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 
-import {Snackbar} from "@material-ui/core";
-import {Alert} from "@material-ui/lab";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 export function MySnackbar(props: any) {
   const [snackbarMessage, setSnackbarMessage] = useState('')
