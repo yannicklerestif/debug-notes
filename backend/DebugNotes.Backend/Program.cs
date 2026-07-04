@@ -43,5 +43,6 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.UseCors("AllowAll");
+app.MapGet("/status", () => Results.Text("ok"));
 app.MapControllers();
 app.Run();
