@@ -4,7 +4,7 @@ using LogLevel = NLog.LogLevel;
 
 namespace DebugNotes.Backend.Services;
 
-public class PubSubQueue(string type, string userId)
+public class PubSubQueue_OLD(string type, string userId)
 {
     private string _userId = userId;
     private string _type = type;

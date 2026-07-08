@@ -6,8 +6,8 @@ public class BrowserIdePubSubService(string userId)
 {
     private string _userId = userId;
     
-    private readonly PubSubQueue _ideSubscribers = new PubSubQueue(type: "IDE", userId: userId);
-    private readonly PubSubQueue _browserSubscribers = new PubSubQueue(type: "Browser", userId: userId);
+    private readonly PubSubQueue_OLD _ideSubscribers = new PubSubQueue_OLD(type: "IDE", userId: userId);
+    private readonly PubSubQueue_OLD _browserSubscribers = new PubSubQueue_OLD(type: "Browser", userId: userId);
     
     public Task IdeSendMessageAsync(string ideId, JsonElement message)
     {
