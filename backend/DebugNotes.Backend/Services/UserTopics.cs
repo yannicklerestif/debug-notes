@@ -2,12 +2,12 @@ namespace DebugNotes.Backend.Services;
 
 public class UserTopics(string userId)
 {
-    private readonly TopicMessageQueues _browsersTopic = new TopicMessageQueues(userId);
-    private readonly TopicMessageQueues _ideTopic = new TopicMessageQueues(userId);
+    private readonly BrowserTopic _browsersTopic = new (userId);
+    private readonly IdeTopic _ideTopic = new (userId);
     
-    public async Task SendMessageToBrowser(Message message)
+    public void SendMessageToBrowser(Message message)
     {
-        await _browsersTopic.SendToYoungestSubscriber(message);
+        _browsersTopic.SendMessage(message);
     }
 
     public Task<List<Message>> PollBrowserMessages(string browserId, TimeSpan waitTimeout)
@@ -15,13 +15,13 @@ public class UserTopics(string userId)
         return _browsersTopic.Poll(browserId, waitTimeout);
     }
 
-    public Task SendMessageToide(Message message)
+    public void SendMessageToide(Message message)
     {
-        return _ideTopic.BroadcastMessage(message);
+        _ideTopic.BroadcastMessage(message);
     }
     
-    public Task<List<Message>> PollIdeMessages(string ideId, TimeSpan waitTimeout)
+    public Task<List<Message>> PollIdeMessagesAsync(string ideId, TimeSpan waitTimeout)
     {
-        return _ideTopic.Poll(ideId, waitTimeout);
+        return _ideTopic.PollAsync(ideId, waitTimeout);
     }
 }

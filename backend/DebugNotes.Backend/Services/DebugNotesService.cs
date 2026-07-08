@@ -4,28 +4,28 @@ namespace DebugNotes.Backend.Services;
 
 public class DebugNotesService
 {
-    private TimeSpan _waitTimeout = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan WaitTimeout = TimeSpan.FromSeconds(30);
     
     private readonly ConcurrentDictionary<string, UserTopics> _usersTopics = new();
 
-    public Task SendMessageToBrowser(string userId, Message message)
+    public void SendMessageToBrowser(string userId, Message message)
     {
-        return GetOrCreateUserTopics(userId).SendMessageToBrowser(message);
+        GetOrCreateUserTopics(userId).SendMessageToBrowser(message);
     }
 
     public Task<List<Message>> PollBrowserMessages(string userId, string browserId)
     {
-        return GetOrCreateUserTopics(userId).PollBrowserMessages(browserId, _waitTimeout);
+        return GetOrCreateUserTopics(userId).PollBrowserMessages(browserId, WaitTimeout);
     }
 
-    public Task SendMessageToIde(string userId, Message message)
+    public void SendMessageToIde(string userId, Message message)
     {
-        return GetOrCreateUserTopics(userId).SendMessageToide(message);
+        GetOrCreateUserTopics(userId).SendMessageToide(message);
     }
 
-    public Task<List<Message>> PollIdeMessages(string userId, string ideId)
+    public Task<List<Message>> PollIdeMessagesAsync(string userId, string ideId)
     {
-        return GetOrCreateUserTopics(userId).PollIdeMessages(ideId, _waitTimeout);
+        return GetOrCreateUserTopics(userId).PollIdeMessagesAsync(ideId, WaitTimeout);
     }
     
     private UserTopics GetOrCreateUserTopics(string userId)

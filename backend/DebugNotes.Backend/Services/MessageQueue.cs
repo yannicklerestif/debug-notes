@@ -39,9 +39,10 @@ public class MessageQueue
         return DrainMessages();
     }
 
-    public ValueTask SendMessage(Message message)
+    public void SendMessage(Message message)
     {
-        return _channel.Writer.WriteAsync(message);
+        // The channel is unbounded so TryWrite should never fail
+        _channel.Writer.TryWrite(message);
     }
 
     private List<Message> DrainMessages()
