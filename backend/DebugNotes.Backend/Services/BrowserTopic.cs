@@ -10,11 +10,31 @@ public class BrowserTopic(string userId)
     private Task<List<Message>>? _onGoingPoll = null;
     private string? _onGoingPoller = null;
     
+    // The counter below kind of duplicates the _onGoingPoll / _onGoingPoller mechanism,
+    // but is used for a different purpose (recording activity to know whether the topic should be
+    // removed.
+    private int _onGoingPollsCount = 0;
+    private DateTimeOffset _lastPollTime = DateTimeOffset.MinValue;
+
     public void SendMessage(Message message)
     {
         _messagesQueue.SendMessage(message);
     }
     
+    // The method is not synchronized because the lock is taken above
+    public void MarkPollingStart()
+    {
+        _onGoingPollsCount++;
+        _lastPollTime = DateTimeOffset.Now;
+    }
+    
+    // The method is not synchronized because the lock is taken above
+    public void MarkPollingEnd()
+    {
+        _onGoingPollsCount--;
+        _lastPollTime = DateTimeOffset.Now;
+    }
+
     public Task<List<Message>> Poll(string browserId, TimeSpan waitTimeout)
     {
         lock (_messagesQueue)
@@ -40,9 +60,23 @@ public class BrowserTopic(string userId)
                 }
             }
 
-            _onGoingPoller = browserId;
-            _onGoingPoll = _messagesQueue.WaitOrTimeout(waitTimeout);
-            return _onGoingPoll;
+            return PollInternal(browserId, waitTimeout);
         }
     }
+
+    private async Task<List<Message>> PollInternal(string browserId, TimeSpan waitTimeout)
+    {
+        _onGoingPoller = browserId;
+        _onGoingPoll = _messagesQueue.WaitOrTimeout(waitTimeout);
+        try
+        {
+            return await _onGoingPoll;
+        }
+        finally
+        {
+            _onGoingPoller = null;
+            _onGoingPoll = null;
+        }
+    }
+
 }

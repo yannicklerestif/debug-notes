@@ -7,8 +7,14 @@ namespace DebugNotes.Backend.Services;
 public class IdeTopic(string userId)
 {
     // the key to this dictionary is the subscriber id
-    private Dictionary<string, MessageQueue> _messagesQueues = new Dictionary<string, MessageQueue>();
+    private Dictionary<string, MessageQueue> _messagesQueues = new ();
 
+    // The counter below kind of duplicates the _onGoingPoll / _onGoingPoller mechanism,
+    // but is used for a different purpose (recording activity to know whether the topic should be
+    // removed.
+    private int _onGoingPollsCount = 0;
+    private DateTimeOffset _lastPollTime = DateTimeOffset.MinValue;
+    
     public void BroadcastMessage(Message message)
     {
         // Locking to make sure no queues are added while we iterate
@@ -19,6 +25,20 @@ public class IdeTopic(string userId)
                 messageQueue.SendMessage(message);
             }
         }
+    }
+    
+    // The method is not synchronized because the lock is taken above
+    public void MarkPollingStart()
+    {
+        _onGoingPollsCount++;
+        _lastPollTime = DateTimeOffset.Now;
+    }
+    
+    // The method is not synchronized because the lock is taken above
+    public void MarkPollingEnd()
+    {
+        _onGoingPollsCount--;
+        _lastPollTime = DateTimeOffset.Now;
     }
     
     public Task<List<Message>> PollAsync(string ideId, TimeSpan waitTimeout)
@@ -39,4 +59,5 @@ public class IdeTopic(string userId)
         
         return messageQueue.WaitOrTimeout(waitTimeout);
     }
+
 }

@@ -28,22 +28,64 @@ public class DebugNotesService
 
     public void SendMessageToBrowser(string userId, Message message)
     {
-        GetOrCreateUserTopics(userId).SendMessageToBrowser(message);
+        while (true)
+        {
+            try
+            {
+                GetOrCreateUserTopics(userId).SendMessageToBrowser(message);
+                break;
+            }
+            catch (UserTopicsDeletedException e)
+            {
+                Logger.Log(LogLevel.Info, "UserTopicsDeleted", e);
+            }
+        }
     }
 
     public Task<List<Message>> PollBrowserMessages(string userId, string browserId)
     {
-        return GetOrCreateUserTopics(userId).PollBrowserMessages(browserId, WaitTimeout);
+        while (true)
+        {
+            try
+            {
+                return GetOrCreateUserTopics(userId).PollBrowserMessages(browserId, WaitTimeout);
+            }
+            catch (UserTopicsDeletedException e)
+            {
+                Logger.Log(LogLevel.Info, "UserTopicsDeleted", e);
+            }
+        }
     }
 
     public void SendMessageToIde(string userId, Message message)
     {
-        GetOrCreateUserTopics(userId).SendMessageToide(message);
+        while (true)
+        {
+            try
+            {
+                GetOrCreateUserTopics(userId).SendMessageToIde(message);
+                break;
+            }
+            catch (UserTopicsDeletedException e)
+            {
+                Logger.Log(LogLevel.Info, "UserTopicsDeleted", e);
+            }
+        }
     }
 
     public Task<List<Message>> PollIdeMessagesAsync(string userId, string ideId)
     {
-        return GetOrCreateUserTopics(userId).PollIdeMessagesAsync(ideId, WaitTimeout);
+        while (true)
+        {
+            try
+            {
+                return GetOrCreateUserTopics(userId).PollIdeMessagesAsync(ideId, WaitTimeout);
+            }
+            catch (UserTopicsDeletedException e)
+            {
+                Logger.Log(LogLevel.Info, "UserTopicsDeleted", e);
+            }
+        }
     }
     
     private UserTopics GetOrCreateUserTopics(string userId)
