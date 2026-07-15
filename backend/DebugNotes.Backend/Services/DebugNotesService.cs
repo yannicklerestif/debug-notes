@@ -123,7 +123,7 @@ public class DebugNotesService
                 continue;
             }
 
-            userTopics.Cleanup();
+            userTopics.Cleanup(InactivityTimeout);
         }
     }
 }

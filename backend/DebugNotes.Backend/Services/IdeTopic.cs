@@ -8,15 +8,14 @@ public class IdeTopic(string userId)
 {
     // the key to this dictionary is the subscriber id
     private Dictionary<string, MessageQueue> _messagesQueues = new ();
-
-    // The counter below kind of duplicates the _onGoingPoll / _onGoingPoller mechanism,
-    // but is used for a different purpose (recording activity to know whether the topic should be
-    // removed.
-    private int _onGoingPollsCount = 0;
-    private DateTimeOffset _lastPollTime = DateTimeOffset.MinValue;
+    private DateTimeOffset _lastMessageTime = DateTimeOffset.MinValue;
     
+    public bool IsActive { get; set; } = true;
+
     public void BroadcastMessage(Message message)
     {
+        _lastMessageTime = DateTimeOffset.UtcNow;
+        
         // Locking to make sure no queues are added while we iterate
         lock (_messagesQueues)
         {
@@ -27,37 +26,38 @@ public class IdeTopic(string userId)
         }
     }
     
-    // The method is not synchronized because the lock is taken above
-    public void MarkPollingStart()
+    // The method is not synchronized because the lock is taken above, at the UserTopics level
+    public void MarkPollStart(string ideId)
     {
-        _onGoingPollsCount++;
-        _lastPollTime = DateTimeOffset.Now;
-    }
-    
-    // The method is not synchronized because the lock is taken above
-    public void MarkPollingEnd()
-    {
-        _onGoingPollsCount--;
-        _lastPollTime = DateTimeOffset.Now;
+        MessageQueue messageQueue;
+        if (_messagesQueues.TryGetValue(ideId, out var existingMessagesQueue))
+        {
+            messageQueue = existingMessagesQueue;
+        }
+        else
+        {
+            messageQueue = new MessageQueue();
+            _messagesQueues[ideId] = messageQueue;
+        }
+        messageQueue.MarkPollStart();
     }
     
     public Task<List<Message>> PollAsync(string ideId, TimeSpan waitTimeout)
     {
-        MessageQueue messageQueue;
-        lock (_messagesQueues)
+        // message queue always exists because we created it when we marked it
+        return _messagesQueues[ideId].WaitOrTimeout(waitTimeout);
+    }
+
+    public void Cleanup(TimeSpan inactivityTimeout)
+    {
+        foreach (var kvp in _messagesQueues)
         {
-            if (_messagesQueues.TryGetValue(ideId, out var existingMessagesQueue))
+            if (kvp.Value.LastPollTime.Add(inactivityTimeout) <= DateTimeOffset.UtcNow)
             {
-                messageQueue = existingMessagesQueue;
-            }
-            else
-            {
-                messageQueue = new MessageQueue();
-                _messagesQueues[ideId] = messageQueue;
+                _messagesQueues.Remove(kvp.Key);
             }
         }
         
-        return messageQueue.WaitOrTimeout(waitTimeout);
+        IsActive = _messagesQueues.Count == 0 && _lastMessageTime + inactivityTimeout <= DateTimeOffset.UtcNow;
     }
-
 }

@@ -1,7 +1,13 @@
+using System.Collections.Concurrent;
+using NLog;
+using LogLevel = NLog.LogLevel;
+
 namespace DebugNotes.Backend.Services;
 
-public class UserTopics(string userId)
+public class UserTopics(string userId, ConcurrentDictionary<string, UserTopics> usersTopics)
 {
+    private static Logger Logger = LogManager.GetCurrentClassLogger();
+
     private readonly BrowserTopic _browsersTopic = new (userId);
     private readonly IdeTopic _ideTopic = new (userId);
 
@@ -31,20 +37,10 @@ public class UserTopics(string userId)
                 throw new UserTopicsDeletedException();
             }
 
-            _browsersTopic.MarkPollingStart();
+            _browsersTopic.MarkPollStart();
         }
-
-        try
-        {
-            return await _browsersTopic.Poll(browserId, waitTimeout);
-        }
-        finally
-        {
-            lock (_userLock)
-            {
-                _browsersTopic.MarkPollingEnd();
-            }
-        }
+        
+        return await _browsersTopic.Poll(browserId, waitTimeout);
     }
 
     public void SendMessageToIde(Message message)
@@ -69,23 +65,13 @@ public class UserTopics(string userId)
                 throw new UserTopicsDeletedException();
             }
 
-            _ideTopic.MarkPollingStart();
+            _ideTopic.MarkPollStart(ideId);
         }
 
-        try
-        {
-            return await _ideTopic.PollAsync(ideId, waitTimeout);
-        }
-        finally
-        {
-            lock (_userLock)
-            {
-                _ideTopic.MarkPollingEnd();
-            }
-        }
+        return await _ideTopic.PollAsync(ideId, waitTimeout);
     }
 
-    public void Cleanup()
+    public void Cleanup(TimeSpan inactivityTimeout)
     {
         lock (_userLock)
         {
@@ -93,17 +79,26 @@ public class UserTopics(string userId)
             {
                 throw new UserTopicsDeletedException();
             }
-
-            // TODO
-            throw new NotImplementedException();
             
-            // Browsers topic cleanup
-            // _browsersTopic.Cleanup();
-            // _ideTopic.Cleanup();
+            // Cleanup both topics
+            _browsersTopic.Cleanup(inactivityTimeout);
+            _ideTopic.Cleanup(inactivityTimeout);
 
-            // if browsersTopic and ideTopic have had no activity in the last 10 minutes:
-            // - Mark the UserTopics object as deleted
-            // - Remove it from the dictionary
+            // if browsersTopic and ideTopic have had no activity in the last 10 minutes,
+            // remove the whole UserTopics object
+            if (!_browsersTopic.IsActive && !_ideTopic.IsActive)
+            {
+                if (!usersTopics.TryRemove(userId, out _))
+                {
+                    // If we couldn't remove the UserTopics object, don't flag it as deleted,
+                    // so we can continue to use it and have a chance to delete it later
+                    Logger.Log(LogLevel.Error, $"UserTopics cleanup failed: {userId}");
+                }
+                else
+                {
+                    WasDeleted = true;
+                }
+            }
         }
     }
 }

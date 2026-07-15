@@ -6,33 +6,23 @@ namespace DebugNotes.Backend.Services;
 /// </summary>
 public class BrowserTopic(string userId)
 {
-    private MessageQueue _messagesQueue = new MessageQueue();
+    private readonly MessageQueue _messagesQueue = new MessageQueue();
     private Task<List<Message>>? _onGoingPoll = null;
     private string? _onGoingPoller = null;
     
-    // The counter below kind of duplicates the _onGoingPoll / _onGoingPoller mechanism,
-    // but is used for a different purpose (recording activity to know whether the topic should be
-    // removed.
-    private int _onGoingPollsCount = 0;
-    private DateTimeOffset _lastPollTime = DateTimeOffset.MinValue;
+    private DateTimeOffset _lastMessageTime = DateTimeOffset.MinValue;
+    public bool IsActive { get; private set; }
 
     public void SendMessage(Message message)
     {
+        _lastMessageTime = DateTimeOffset.UtcNow;
         _messagesQueue.SendMessage(message);
     }
     
     // The method is not synchronized because the lock is taken above
-    public void MarkPollingStart()
+    public void MarkPollStart()
     {
-        _onGoingPollsCount++;
-        _lastPollTime = DateTimeOffset.Now;
-    }
-    
-    // The method is not synchronized because the lock is taken above
-    public void MarkPollingEnd()
-    {
-        _onGoingPollsCount--;
-        _lastPollTime = DateTimeOffset.Now;
+        _messagesQueue.MarkPollStart();
     }
 
     public Task<List<Message>> Poll(string browserId, TimeSpan waitTimeout)
@@ -79,4 +69,9 @@ public class BrowserTopic(string userId)
         }
     }
 
+    public void Cleanup(TimeSpan inactivityTimeout)
+    {
+        _messagesQueue.Cleanup(inactivityTimeout);
+        IsActive = _messagesQueue.IsEmpty() && _lastMessageTime + inactivityTimeout <= DateTimeOffset.UtcNow;
+    }
 }

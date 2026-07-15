@@ -8,9 +8,14 @@ namespace DebugNotes.Backend.Services;
 public class MessageQueue
 {
     private readonly Channel<Message> _channel = Channel.CreateUnbounded<Message>();
+    public DateTimeOffset LastPollTime { get; private set; } = DateTimeOffset.MinValue;
 
-    public DateTimeOffset CreationTime { get; } = DateTimeOffset.UtcNow;
+    public void MarkPollStart()
+    {
+        LastPollTime = DateTimeOffset.UtcNow;
+    }
 
+    // TODO: Remember if a poll is ongoing to prevent another concurrent poll if poller has connectivity issues
     public async Task<List<Message>> WaitOrTimeout(TimeSpan waitTimeout)
     {
         var messages = DrainMessages();
@@ -54,5 +59,30 @@ public class MessageQueue
         }
 
         return messages;
+    }
+
+    public void Cleanup(TimeSpan inactivityTimeout)
+    {
+        while (true)
+        {
+            // TODO: Check what a false return value means. I'm assuming it means no message is available.
+            if (!_channel.Reader.TryPeek(out var message))
+            {
+                break;
+            }
+            
+            if (!(message.CreationTime + inactivityTimeout <= DateTimeOffset.UtcNow))
+            {
+                break;
+            }
+            
+            _channel.Reader.TryRead(out _);
+        }
+    }
+
+    // TODO: Check that my channel can count
+    public bool IsEmpty()
+    {
+        return _channel.Reader.Count == 0;
     }
 }
