@@ -50,3 +50,5 @@ app.UseCors("AllowAll");
 app.MapGet("/status", () => Results.Text("ok"));
 app.MapControllers();
 app.Run();
+
+public partial class Program;

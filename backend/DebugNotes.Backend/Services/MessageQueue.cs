@@ -65,7 +65,6 @@ public class MessageQueue
     {
         while (true)
         {
-            // TODO: Check what a false return value means. I'm assuming it means no message is available.
             if (!_channel.Reader.TryPeek(out var message))
             {
                 break;
@@ -80,9 +79,8 @@ public class MessageQueue
         }
     }
 
-    // TODO: Check that my channel can count. If not, use TryPeek that should be more easily available.
     public bool IsEmpty()
     {
-        return _channel.Reader.Count == 0;
+        return _channel.Reader.TryPeek(out _) == false;
     }
 }

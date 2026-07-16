@@ -1,3 +1,4 @@
+using System.Text.Json;
 using DebugNotes.Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,32 +16,38 @@ public class DebugNotesController : ControllerBase
     }
 
     [HttpPost("browser/messages")]
-    public IActionResult SendMessageToBrowser([FromQuery] string userId, [FromBody] Message message)
+    public IActionResult SendMessageToBrowser([FromQuery] string userId, [FromBody] JsonElement payload)
     {
-        _service.SendMessageToBrowser(userId, message);
+        _service.SendMessageToBrowser(
+            userId,
+            new Message(payload.Clone(), DateTimeOffset.UtcNow));
         return NoContent();
     }
 
     [HttpGet("browser/messages")]
-    public async Task<ActionResult<List<Message>>> PollBrowserMessages(
+    public async Task<ActionResult<List<JsonElement>>> PollBrowserMessages(
         [FromQuery] string userId,
         [FromQuery] string browserId)
     {
-        return Ok(await _service.PollBrowserMessages(userId, browserId));
+        var messages = await _service.PollBrowserMessages(userId, browserId);
+        return Ok(messages.Select(message => message.Payload).ToList());
     }
 
     [HttpPost("ide/messages")]
-    public IActionResult SendMessageToIde([FromQuery] string userId, [FromBody] Message message)
+    public IActionResult SendMessageToIde([FromQuery] string userId, [FromBody] JsonElement payload)
     {
-        _service.SendMessageToIde(userId, message);
+        _service.SendMessageToIde(
+            userId,
+            new Message(payload.Clone(), DateTimeOffset.UtcNow));
         return NoContent();
     }
 
     [HttpGet("ide/messages")]
-    public async Task<ActionResult<List<Message>>> PollIdeMessagesAsync(
+    public async Task<ActionResult<List<JsonElement>>> PollIdeMessagesAsync(
         [FromQuery] string userId,
         [FromQuery] string ideId)
     {
-        return Ok(await _service.PollIdeMessagesAsync(userId, ideId));
+        var messages = await _service.PollIdeMessagesAsync(userId, ideId);
+        return Ok(messages.Select(message => message.Payload).ToList());
     }
 }
