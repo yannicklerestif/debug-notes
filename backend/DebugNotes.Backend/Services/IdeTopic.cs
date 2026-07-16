@@ -91,6 +91,6 @@ public class IdeTopic(string userId)
             }
         }
         
-        IsActive = _messagesQueues.Count == 0 && _lastMessageTime + inactivityTimeout <= DateTimeOffset.UtcNow;
+        IsActive = _messagesQueues.Count != 0 || _lastMessageTime + inactivityTimeout > DateTimeOffset.UtcNow;
     }
 }

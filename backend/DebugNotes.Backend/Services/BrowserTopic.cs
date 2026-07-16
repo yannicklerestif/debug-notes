@@ -11,6 +11,7 @@ public class BrowserTopic(string userId)
     private string? _onGoingPoller = null;
     
     private DateTimeOffset _lastMessageTime = DateTimeOffset.MinValue;
+    
     public bool IsActive { get; private set; }
 
     public void SendMessage(Message message)
@@ -76,6 +77,7 @@ public class BrowserTopic(string userId)
     public void Cleanup(TimeSpan inactivityTimeout)
     {
         _messagesQueue.Cleanup(inactivityTimeout);
-        IsActive = _messagesQueue.IsEmpty() && _lastMessageTime + inactivityTimeout <= DateTimeOffset.UtcNow;
+        IsActive = _messagesQueue.LastPollTime + inactivityTimeout > DateTimeOffset.UtcNow 
+                   || _lastMessageTime + inactivityTimeout > DateTimeOffset.UtcNow;
     }
 }
