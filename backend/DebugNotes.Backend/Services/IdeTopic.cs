@@ -7,7 +7,8 @@ namespace DebugNotes.Backend.Services;
 public class IdeTopic(string userId)
 {
     // the key to this dictionary is the subscriber id
-    private Dictionary<string, MessageQueue> _messagesQueues = new ();
+    private readonly Dictionary<string, MessageQueue> _messagesQueues = new();
+    private readonly Dictionary<string, Task<List<Message>>> _onGoingPolls = new();
     private DateTimeOffset _lastMessageTime = DateTimeOffset.MinValue;
     
     public bool IsActive { get; set; } = true;
@@ -42,8 +43,37 @@ public class IdeTopic(string userId)
     
     public Task<List<Message>> PollAsync(string ideId, TimeSpan waitTimeout)
     {
-        // message queue always exists because we created it when we marked it
-        return _messagesQueues[ideId].WaitOrTimeout(waitTimeout);
+        lock (_messagesQueues)
+        {
+            if (_onGoingPolls.TryGetValue(ideId, out var onGoingPoll))
+            {
+                // The same IDE is polling twice concurrently. This can happen if the caller loses
+                // connectivity while its previous poll is still running on the server. Reusing the
+                // existing task ensures that the queued messages are consumed only once.
+                return onGoingPoll;
+            }
+
+            return PollInternalAsync(ideId, waitTimeout);
+        }
+    }
+
+    private async Task<List<Message>> PollInternalAsync(string ideId, TimeSpan waitTimeout)
+    {
+        // The message queue exists because MarkPollStart created it before polling.
+        var onGoingPoll = _messagesQueues[ideId].WaitOrTimeout(waitTimeout);
+        _onGoingPolls[ideId] = onGoingPoll;
+
+        try
+        {
+            return await onGoingPoll;
+        }
+        finally
+        {
+            lock (_messagesQueues)
+            {
+                _onGoingPolls.Remove(ideId);
+            }
+        }
     }
 
     // Inactive pollers are detected by the LastPollTime of each queue.
