@@ -113,6 +113,7 @@ public class DebugNotesService
         }
     }
 
+    // TODO: Adding TimeProviders and testing cleanup would be welcome.
     private async Task Cleanup()
     {
         foreach (var userId in _usersTopics.Keys)
