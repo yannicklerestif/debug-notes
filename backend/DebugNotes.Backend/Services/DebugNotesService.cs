@@ -90,7 +90,7 @@ public class DebugNotesService
     
     private UserTopics GetOrCreateUserTopics(string userId)
     {
-        return _usersTopics.GetOrAdd(userId, _ =>  new UserTopics(userId));
+        return _usersTopics.GetOrAdd(userId, _ =>  new UserTopics(userId, _usersTopics));
     }
     
     private async Task StartCleaningLoop()

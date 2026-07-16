@@ -80,7 +80,7 @@ public class MessageQueue
         }
     }
 
-    // TODO: Check that my channel can count
+    // TODO: Check that my channel can count. If not, use TryPeek that should be more easily available.
     public bool IsEmpty()
     {
         return _channel.Reader.Count == 0;

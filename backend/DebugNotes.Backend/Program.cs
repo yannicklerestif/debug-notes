@@ -10,7 +10,7 @@ builder.Services.AddLogging(logging =>
     logging.ClearProviders();
 });
 builder.Services.AddSingleton<ILoggerProvider, NLogLoggerProvider>();
-builder.Services.AddSingleton<IBrowserIdePubSubServices, BrowserIdePubSubServices>();
+builder.Services.AddSingleton<DebugNotesService>();
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -23,6 +23,10 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+var debugNotesService = app.Services.GetRequiredService<DebugNotesService>();
+debugNotesService.Start();
+app.Lifetime.ApplicationStopping.Register(debugNotesService.Stop);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

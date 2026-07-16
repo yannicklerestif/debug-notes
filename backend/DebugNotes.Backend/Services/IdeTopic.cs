@@ -16,13 +16,11 @@ public class IdeTopic(string userId)
     {
         _lastMessageTime = DateTimeOffset.UtcNow;
         
-        // Locking to make sure no queues are added while we iterate
-        lock (_messagesQueues)
+        // No need to lock: queue creation (in MarkPollStart) and deletion (in Cleanup)
+        // are done under a lock at the UserTopics level
+        foreach (var messageQueue in _messagesQueues.Values)
         {
-            foreach (var messageQueue in _messagesQueues.Values)
-            {
-                messageQueue.SendMessage(message);
-            }
+            messageQueue.SendMessage(message);
         }
     }
     
