@@ -69,6 +69,10 @@ public class BrowserTopic(string userId)
         }
     }
 
+    // Inactive pollers are detected by using message age: indeed, if old messages are still in the queue,
+    // It means that nobody polled them.
+    // Inactive senders are detected using _lastMessageTime
+    // If neither is active then the topic is considered inactive.
     public void Cleanup(TimeSpan inactivityTimeout)
     {
         _messagesQueue.Cleanup(inactivityTimeout);
