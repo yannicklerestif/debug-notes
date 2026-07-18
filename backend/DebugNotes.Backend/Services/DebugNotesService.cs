@@ -102,7 +102,7 @@ public class DebugNotesService
                 await Task.Delay(InactivityTimeout, _cts.Token);
                 await Cleanup();
             }
-            catch (OperationCanceledException _)
+            catch (OperationCanceledException)
             {
                 throw;
             }

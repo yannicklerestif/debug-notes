@@ -4,7 +4,7 @@ namespace DebugNotes.Backend.Services;
 /// The queues for a topic (i.e. for a user token + a given direction
 /// (i.e. diagram -> client, or client -> diagram)
 /// </summary>
-public class IdeTopic(string userId)
+public class IdeTopic
 {
     // the key to this dictionary is the subscriber id
     private readonly Dictionary<string, MessageQueue> _messagesQueues = new();

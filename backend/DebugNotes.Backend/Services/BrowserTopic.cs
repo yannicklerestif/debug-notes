@@ -4,7 +4,7 @@ namespace DebugNotes.Backend.Services;
 /// The queues for a topic (i.e. for a user token + a given direction
 /// (i.e. diagram -> client, or client -> diagram)
 /// </summary>
-public class BrowserTopic(string userId)
+public class BrowserTopic
 {
     private readonly MessageQueue _messagesQueue = new MessageQueue();
     private Task<List<Message>>? _onGoingPoll = null;

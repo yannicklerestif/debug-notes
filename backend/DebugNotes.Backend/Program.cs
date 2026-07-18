@@ -51,12 +51,14 @@ public class Program
             c.RoutePrefix = "swagger"; // Serve Swagger at root
         });
         // }
+        app.UseDefaultFiles();
         app.UseStaticFiles();
         app.UseRouting();
         app.UseAuthorization();
         app.UseCors("AllowAll");
         app.MapGet("/status", () => Results.Text("ok"));
         app.MapControllers();
+        app.MapFallbackToFile("index.html");
 
         app.Lifetime.ApplicationStarted.Register(() =>
         {

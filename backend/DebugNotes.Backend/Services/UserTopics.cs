@@ -8,8 +8,8 @@ public class UserTopics(string userId, ConcurrentDictionary<string, UserTopics> 
 {
     private static Logger Logger = LogManager.GetCurrentClassLogger();
 
-    private readonly BrowserTopic _browsersTopic = new (userId);
-    private readonly IdeTopic _ideTopic = new (userId);
+    private readonly BrowserTopic _browsersTopic = new ();
+    private readonly IdeTopic _ideTopic = new ();
 
     private readonly object _userLock = new ();
 
