@@ -6,7 +6,8 @@ const START_WORKER = "START_WORKER";
 const STOP_WORKER = "STOP_WORKER";
 const WORKER_TICK = "WORKER_TICK";
 
-let connected: boolean = false;
+// Hardcoding the user Id for now. Next step this will need to be created and shared with clients
+let userId = "12345";
 let browserId = uuidv4();
 
 function wait(ms: number): Promise<void> {
@@ -14,28 +15,18 @@ function wait(ms: number): Promise<void> {
 }
 
 async function startPollingLoop() {
-    let status = 0;
     console.log("Starting loop...");
-    while (status === 0) {
+    while (true) {
         try {
-            const connect = !connected;
-            const response = await fetch(`http://localhost:5151/api/browser/wait_for_message?`
-                + `userId=12345&browserId=${browserId}&connect=${connect}`);
-            if (response.status !== 200) {
+            const query = new URLSearchParams({userId, browserId,});
+            const response = await fetch(`/api/browser/messages?${query}`);
+            if (!response.ok) {
                 await wait(5000);
                 continue;
             }
-            connected = true;
-            // status = 0: connected
-            const data = await response.json();
-            status = data.state;
-            if (status === 0) {
-                const message = data.message;
-                if (message === null || message === undefined) {
-                    // This is the "regular" timeout, just keep polling
-                    console.log("No data, continuing...");
-                    continue;
-                }
+
+            const messages = await response.json();
+            for (const message of messages) {
                 // There is some data: let's process it
                 // TODO: It's a little weird to use methods registered into window like this,
                 //       but that's how it was done before (because of the CEF browser)
@@ -61,10 +52,6 @@ async function startPollingLoop() {
                         methodName: message.MethodName,
                     });
                 }
-            } else {
-                // status = 1 or 2: disconnecting.
-                // TODO: Ack the disconnect so the server can clean up
-                console.log("Disconnecting...");
             }
         } catch (e) {
             console.error("Error waiting for message. Waiting 5 seconds before starting again.", e);

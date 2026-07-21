@@ -44,14 +44,14 @@ namespace ReSharperPlugin.DebugNotes.Rider.Model
         public void SendCall(MethodStructure method, MethodStructure parent)
         {
             // _model.Call.Fire(new Call(method, parent));
-            _ = _messageSendingClient.SendCallMessage("12345", "cccc", new Call(method, parent));
+            _ = _messageSendingClient.SendCallMessage("12345", new Call(method, parent));
         }
 
         public void SendMethod(MethodStructure method)
         {
-            // TODO: userId + ideId
+            // TODO: userId
             // TODO: Make this async? Right now we fire and forget
-            _ = _messageSendingClient.SendMethodMessage("12345", "cccc", method);
+            _ = _messageSendingClient.SendMethodMessage("12345", method);
             // _model.Method.Fire(method);
         }
 

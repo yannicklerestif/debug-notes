@@ -8,7 +8,7 @@ public class HttpClientFactory : IDisposable
 {
     private HttpClientHandler _httpClientHandler;
     private DateTimeOffset _lastHttpClientHandlerCreationTime = DateTimeOffset.MinValue;
-    private const string BaseAddress = "http://localhost:5151/api";
+    private const string BaseAddress = "https://debug-notes.com/";
     private static readonly TimeSpan HttpClientHandlerTtl = TimeSpan.FromMinutes(5);
 
     public HttpClient GetClient()
