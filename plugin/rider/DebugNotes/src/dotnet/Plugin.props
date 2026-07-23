@@ -3,17 +3,17 @@
   <PropertyGroup>
     <!-- See https://www.nuget.org/packages/JetBrains.ReSharper.SDK -->
     <!-- Keep in sync with ProductVersion in gradle.properties -->
-    <SdkVersion>2024.2.4</SdkVersion>
+    <SdkVersion>2026.1.4</SdkVersion>
 
-    <Title>DebugNotes</Title>
-    <Description>Description</Description>
+    <Title>Debug Notes</Title>
+    <Description>Debug Notes allows you to draw a diagram of your code while you're debugging it, right from the IDE.</Description>
 
-    <Authors>Author</Authors>
+    <Authors>Yannick Le Restif</Authors>
     <Copyright>Copyright $([System.DateTime]::Now.Year) Maintainers of DebugNotes</Copyright>
     <PackageTags>resharper plugin</PackageTags>
 
-    <PackageProjectUrl></PackageProjectUrl>
-    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/yannicklerestif/debug-notes</PackageProjectUrl>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <PackageIconUrl></PackageIconUrl>
   </PropertyGroup>
 

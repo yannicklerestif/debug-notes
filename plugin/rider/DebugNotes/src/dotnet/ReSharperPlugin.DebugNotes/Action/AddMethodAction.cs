@@ -21,7 +21,6 @@ namespace ReSharperPlugin.DebugNotes
 
         public void Execute(IDataContext context, DelegateExecute nextExecute)
         {
-            DebugNotesTempLogger.Log("AddMethodAction.Execute -----------------------------------");
             var declaredMethod = ActionHelper.GetMethod(context);
             if (declaredMethod == null)
             {

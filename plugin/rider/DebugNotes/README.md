@@ -17,13 +17,16 @@ To create and publish a new version of the plugin:
 - Update the version in [gradle.properties](./gradle.properties)
 - Choose the channel in the `publishPlugin` task of [build.gradle](./build.gradle)
 - Make sure the file `token` is set (in the parent directory of the directory this file is in)
-- Launch the task `publishPlugin` from [build.gradle](./build.gradle). This will:
-  - Build the front part of the plugin (`buildWebview`) and copy the generated artifacts into the plugin resources
+- Launch the task `publishPlugin` from [build.gradle](./build.gradle):
+  - from `~/repos/debug-notes/plugin/rider/DebugNotes`, run `./gradlew publishPlugin -x testDotNet`
+    - The `-x testDotNet` is because currently there are .Net 4.71 tests there, which fail without Mono
   - Build the C# / Java part of the plugin
   - Package the plugin
   - Send it for approval to Jetbrains
-  - If the version doesn't exist yet, `publishPlugin` will complain that the `File does not exist`.
-This doesn't prevent the built / submission from working.
+
+The Rider archive includes both the frontend and the compiled .NET backend. It does
+not need a separate NuGet upload unless the backend is also published as a
+standalone ReSharper plugin.
 
 ## 3. Version changing notes
 Use the [template plugin](https://github.com/JetBrains/resharper-rider-plugin/blob/master/template/content/build.gradle) in Github to get the versions below, hopefull they will be recent

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using JetBrains.Application.Parts;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Navigation.NavigationExtensions;
@@ -18,7 +19,7 @@ using ReSharperPlugin.DebugNotes.Http;
 
 namespace ReSharperPlugin.DebugNotes.Rider.Model
 {
-    [SolutionComponent]
+    [SolutionComponent(Instantiation.ContainerAsyncPrimaryThread)]
     public class DebugNotesComponent
     {
         private readonly DebugNotesModel _model;
@@ -28,8 +29,6 @@ namespace ReSharperPlugin.DebugNotes.Rider.Model
 
         public DebugNotesComponent(Lifetime lifetime, ISolution solution)
         {
-            DebugNotesTempLogger.Log("Building DebugNotesComponent *****************************");
-            
             // TODO: Use DI for the singletons below
             var httpClientFactory = new HttpClientFactory();
             _messageSendingClient = new MessageSendingClient(httpClientFactory);
